@@ -1,38 +1,7 @@
 from tkinter import *
 from tkinter.ttk import *
 import os
-# import enum
-
-
-
-class Mouse_state:
-   
-    normal  = 1           # neither circle nor line is clicked 
-    circle = 2           # circle is clicked
-    line   = 3           # line is clicked
-
-    def __init__(self):
-        self.__state = Mouse_state.normal
-        self.callback = None    
-
-    def set_callback(self,callback):
-        self.callback = callback
-
-
-    def set_state(self,new_state):
-        
-        if self.callback :
-            self.callback()
-            self.__state = new_state
-        else:
-            self.__state = new_state
-
-    def get_state(self):
-        
-        return self.__state
-    
-
-mouse = Mouse_state()
+from settings import mouse,Mouse_state
 
 class Button_Bar(Frame) :
     

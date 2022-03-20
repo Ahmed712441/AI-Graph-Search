@@ -9,7 +9,6 @@ class Button_Bar(Frame) :
         
         Frame.__init__(self, root,width=width,height=height)
         self.grid_propagate(0)
-        # self.mouse = Mouse_state.normal # describes mouse state
         self.root = root
         circle_img = PhotoImage(file=os.path.join(os.getcwd(),'GUI','images','circle_resized.png'))
         line_img = PhotoImage(file=os.path.join(os.getcwd(),'GUI','images','line_resized.png'))

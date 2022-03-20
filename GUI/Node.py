@@ -20,6 +20,10 @@ class Element:
     def deselect(self):
         pass
 
+    @abstractmethod
+    def bind_event(self,callback):
+        pass
+
 
 class Line(Element):
 
@@ -71,6 +75,9 @@ class Line(Element):
 
         self.canvas.itemconfig(self.id, fill=LINE_COLOR_NORMAL)
     
+    def bind_event(self,callback,binded_event='<Button-1>'):
+        
+        self.canvas.tag_bind(self.id, binded_event, lambda event, arg=self.id: callback(event, arg))
 
     def __str__(self):
 
@@ -143,6 +150,10 @@ class Node(Element):
     def deselect(self):
 
         self.canvas.itemconfig(self.id, fill=CIRCLE_COLOR_NORMAL)
+
+    def bind_event(self,callback,binded_event='<Button-1>'):
+        self.canvas.tag_bind(self.id, binded_event, lambda event, arg=self.id: callback(event, arg))
+        self.canvas.tag_bind(self.label_id, binded_event, lambda event, arg=self.id: callback(event, arg))
 
     def __str__(self):
     

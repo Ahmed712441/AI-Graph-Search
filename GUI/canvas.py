@@ -50,13 +50,13 @@ class DrawingCanvas(Frame):
         # note: if item is selected color = blue , not selected color = green 
 
         if self.connection_node :
-            # self.canvas.itemconfig(self.connection_node, fill="#0f0") # reseting item color to normal color (green)
+            
             self.connection_node.deselect()
             self.connection_node = None
             
         
         if self.selected:
-            # self.canvas.itemconfig(self.selected, fill="#0f0") # reseting item color to normal color (green)
+            
             self.selected.deselect()
             self.selected = None
 
@@ -72,14 +72,15 @@ class DrawingCanvas(Frame):
             try:
                 id = n.create() # create node
                 self.objects[str(id)] = n # add node to nodes hash-table
-                self.canvas.tag_bind(id, '<Button-1>', self.node_clicked) # add click event to node
+                n.bind_event(self.node_clicked) # add click event to node
+                 
                 self.count_nodes+=1 # increment number of nodes
             except Exception as e: 
                 messagebox.showerror(title=e.title,message=e)
                 del n
             
 
-    def node_clicked(self,event):
+    def node_clicked(self,event,canvas_item_id):
 
         '''
         function for listening to mouse click event on node it has many cases :
@@ -89,8 +90,6 @@ class DrawingCanvas(Frame):
         4th case: mouse state is normal and self.selected is not None so the we will deselect old node and select the new one
         5th case: mouse state is normal and self.selected is equal to clicked node so we will deselect this node and makes self.selected = None 
         '''
-
-        canvas_item_id = event.widget.find_withtag('current')[0] # getting the id of clicked item
 
         if mouse.get_state() == Mouse_state.line: # checking for mouse state
             # 2nd case
@@ -111,7 +110,7 @@ class DrawingCanvas(Frame):
                     try :
                         
                         line = self.connection_node.connect_node(self.objects[str(canvas_item_id)])
-                        self.canvas.tag_bind(line.id, '<Button-1>', self.line_clicked)
+                        line.bind_event(self.line_clicked)
                         self.objects[str(line.id)] =  line
                         
                         self.connection_node.deselect()
@@ -148,9 +147,8 @@ class DrawingCanvas(Frame):
         self.selected.deselect()
         self.selected = None
 
-    def line_clicked(self,event):
+    def line_clicked(self,event,canvas_item_id):
 
-        canvas_item_id = event.widget.find_withtag('current')[0] # getting the id of clicked item
         if mouse.get_state() == Mouse_state.normal:
             
             if not self.selected : 

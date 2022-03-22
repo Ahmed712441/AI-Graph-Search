@@ -23,9 +23,11 @@ class DuplicateConnectionException(Exception):
 
 class Mouse_state:
    
-    normal  = 1           # neither circle nor line is clicked 
+    normal  = 1          # neither circle nor line is clicked 
     circle = 2           # circle is clicked
     line   = 3           # line is clicked
+    initial_node = 4     # initial node clicked
+    goal_node = 5        # goal node clicked
 
     def __init__(self):
         self.__state = Mouse_state.normal

@@ -5,7 +5,7 @@ from settings import mouse,Mouse_state
 
 class Button_Bar(Frame) :
     
-    def __init__(self,root,width=200,height=200):
+    def __init__(self,root,width=500,height=500):
         
         Frame.__init__(self, root,width=width,height=height)
         self.grid_propagate(0)

@@ -9,7 +9,6 @@ from settings import mouse,Mouse_state,CANVAS_BACKGROUND_COLOR
 class DrawingCanvas(Frame):
 
     def __init__(self,root,width=200,height=200,canvas_width=1000,canvas_height=1000):
-        
         '''
         constructor
         '''
@@ -24,9 +23,9 @@ class DrawingCanvas(Frame):
         self.connection_node = None # node which carry the id of previously selected node needed only in line case as line needs to connects two nodes so this is considered as the first node  
         self.objects = dict() # hash-map used for mapping objects_id (Lines and Nodes) on canvas to objects (Line or Node) 
         self.selected = None # carry the id of selected node to be edited , deleted
+        self.initial_node = None # carry initial node
         self.grid_propagate(0) # used to assures that frame will take its height and width even its children are smaller
         self.canvas.grid(row=0,column=0,sticky=(N,W,E,S))  # places the canvas in row : 0 , column :0 in the frame
-        # canvas.grid(column=0, row=0, sticky=(N,W,E,S))
         self.hor_scrollbar.grid(column=0, row=1, sticky=(W,E))
         self.ver_scrollbar.grid(column=1, row=0, sticky=(N,S))
         self.control_bar.grid(column=2,row=0) # places the control_bar in row : 0 , column :1 in the frame
@@ -150,7 +149,31 @@ class DrawingCanvas(Frame):
                 self.selected.deselect()
                 self.selected = self.objects[str(canvas_item_id)]
                 self.selected.select()
-               
+
+        elif mouse.get_state() == Mouse_state.initial_node:
+            selected_node = self.objects[str(canvas_item_id)]
+            
+            if not self.initial_node:
+                self.initial_node = selected_node
+                self.initial_node.set_initial()
+            
+            elif self.initial_node == selected_node:
+                self.initial_node.reset_initial()
+                self.initial_node = None
+
+            else:
+                self.initial_node.reset_initial()
+                self.initial_node = selected_node
+                self.initial_node.set_initial()
+
+        elif mouse.get_state() == Mouse_state.goal_node:
+
+            selected_node = self.objects[str(canvas_item_id)]
+            
+            if selected_node.is_goal():
+                selected_node.reset_goal()
+            else:
+                selected_node.set_goal()
 
     def reset_selected(self):
         
@@ -186,9 +209,9 @@ if __name__=="__main__":
 
 
     root =  Tk()
-    root.geometry("500x500")
+    root.geometry("1000x1000")
 
-    can = DrawingCanvas(root,500,500)
+    can = DrawingCanvas(root,600,600)
 
     can.grid()
 

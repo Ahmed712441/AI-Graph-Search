@@ -96,13 +96,35 @@ class Node(Element):
         self.adj = [] # carries adjancent nodes
         self.lines_out = [] # has all out lines 
         self.lines_in = [] # has all in lines
-        self.goal = goal # is this node a goal or not 
+        self.__goal = goal # is this node a goal or not 
         self.canvas = canvas # canvas object helps in drawing on screen
         self.x = x # x coordinate of its center
         self.y = y # y coordinate of its center
         self.label = label # unique label used to identify each node used mainly in GUI 
+        self.initial = False
 
+    def set_initial(self):
+        self.initial = True
+        self.__reset_color()
 
+    def reset_initial(self):
+        
+        self.initial = False
+        self.__reset_color()
+
+    def set_goal(self):
+
+        self.__goal = True
+        self.__reset_color()
+
+    def reset_goal(self):
+        
+        self.__goal = False
+        self.__reset_color()
+
+    def is_goal(self):
+        
+        return self.__goal
 
     def connect_node(self,node):
 
@@ -134,27 +156,34 @@ class Node(Element):
         self.label_id = self.canvas.create_text((self.x, self.y), text=self.label)
         return self.id
 
-    def change_node_color(self):
-        
-        self.canvas.itemconfig(self.id, fill="red")
-
+    
     def delete(self):
         
-
         for line in self.lines_in + self.lines_out:
             line.delete()
         
         self.canvas.delete(self.id)
         self.canvas.delete(self.label_id)
 
-
     def select(self):
 
         self.canvas.itemconfig(self.id, fill=CIRCLE_COLOR_SELECTED)
 
-    def deselect(self):
+    def __reset_color(self):
+        
+        if self.__goal and self.initial:
+            self.canvas.itemconfig(self.id, fill=GOAL_INITIAL_COLOR)
+        elif self.initial:
+            self.canvas.itemconfig(self.id, fill=INITIAL_NODE_COLOR)
+        elif self.__goal:
+            self.canvas.itemconfig(self.id, fill=GOAL_NODE_COLOR)
+        else:
+            self.canvas.itemconfig(self.id, fill=CIRCLE_COLOR_NORMAL)
 
-        self.canvas.itemconfig(self.id, fill=CIRCLE_COLOR_NORMAL)
+    def deselect(self):
+        
+        self.__reset_color()
+        
 
     def bind_event(self,callback,binded_event='<Button-1>'):
         self.canvas.tag_bind(self.id, binded_event, lambda event, arg=self.id: callback(event, arg))

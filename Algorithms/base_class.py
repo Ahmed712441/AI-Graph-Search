@@ -17,24 +17,53 @@ class Algorithm(threading.Thread):
         self.current_node = inital_node
         self.canvas = canvas
         self.fringe = []
-        self.visited = []
+        # self.visited = []
     
-    
-    def add(self):
-        '''
-        normal implementation to add expanded nodes to fringe override it in uniform search to add them sorted by weight
-        '''
-        self.fringe += self.current_node.adj
+    def expand_node(self):
 
-    def expand(self):
+        '''
+        normal implementation to expand node override it when you need
+        note : this function expand the node in self.current_node variable. So , loop using this file 
+        '''
         
-        self.add()
-        # self.canvas
-    
+        for node in self.current_node.adj:
+            node.mark_in_fringe()
+        
+        self.fringe += self.current_node.adj
+        
+        
+    def check_node(self):
+        
+        '''
+        normal implementation to check if node is goal or not override it when you need
+        ''' 
+        return self.current_node.is_goal()
 
-    @abstractmethod
+
+    def pick_node(self):
+
+        '''
+        normal implementation to pick new node        
+        ''' 
+        try:
+            self.current_node = self.fringe.pop(0)
+        except:
+            self.current_node = None
+
+    
     def run(self):
-        pass
+        
+        while self.__running.is_set(): # checking if the user terminates the thread or not
+            while self.current_node: # checking if the self.current_node = None means fringe is empty and no goal
+                self.__flag.wait() # used for pause and resume
+                self.current_node.mark_active() # change node color to active color which indicates that it is processed
+                if(self.check_node()): # check if node is goal or not
+                    print("goal found") # this will be changed to be displayed on label
+                    return # finish the thread
+                self.expand_node() # expand node
+                self.current_node.mark_visited() # change node color to visited node
+                self.pick_node() # pick new node from the fringe
+                
 
     def pause(self):
         self.__flag.clear() # Set to False to block the thread

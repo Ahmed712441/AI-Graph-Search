@@ -1,3 +1,4 @@
+from textwrap import fill
 from tkinter import *
 from tkinter import messagebox
 from Node import Node , Line
@@ -45,6 +46,9 @@ class DrawingCanvas(Frame):
             if  isinstance(self.selected,Node):
                 for line in self.selected.lines_in + self.selected.lines_out:
                     del self.objects[str(line.id)]
+            
+            if self.selected == self.initial_node :
+                self.initial_node = None
 
             self.selected.delete() # get the node from the map and deletes it
             del self.objects[str(self.selected.id)] 
@@ -211,7 +215,7 @@ if __name__=="__main__":
     root =  Tk()
     root.geometry("1000x1000")
 
-    can = DrawingCanvas(root,600,600)
+    can = DrawingCanvas(root,500,500)
 
     can.grid()
 

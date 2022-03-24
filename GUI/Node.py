@@ -28,8 +28,8 @@ class Line(Element):
 
     def __init__(self,canvas,Node_out,Node_in,weight=1):
         
-        self.id = None
-        self.canvas = canvas
+        self.__id = None
+        self.__canvas = canvas
         self.Node_in = Node_in
         self.Node_out = Node_out
         self.weight = weight
@@ -37,10 +37,10 @@ class Line(Element):
 
     def add_label(self):
 
-        x1,y1,x2,y2 = self.canvas.coords(self.id)
+        x1,y1,x2,y2 = self.__canvas.coords(self.__id)
         x = (x1 + x2)//2
         y = (y1 + y2)//2
-        self.label_id = self.canvas.create_text((x, y), text=self.weight)
+        self.__label_id = self.__canvas.create_text((x, y), text=self.weight)
         
 
     def create(self):
@@ -49,17 +49,17 @@ class Line(Element):
         dx = abs(self.Node_in.x - self.Node_out.x)
         if(dx > dy):
             if(self.Node_in.y < self.Node_out.y):
-                self.id = self.canvas.create_line(self.Node_out.x,self.Node_out.y+RADUIS,self.Node_in.x,self.Node_in.y+RADUIS,arrow="last",fill=LINE_COLOR_NORMAL)
+                self.__id = self.__canvas.create_line(self.Node_out.x,self.Node_out.y+RADUIS,self.Node_in.x,self.Node_in.y+RADUIS,arrow="last",fill=LINE_COLOR_NORMAL)
             else:
-                self.id = self.canvas.create_line(self.Node_out.x,self.Node_out.y-RADUIS,self.Node_in.x,self.Node_in.y-RADUIS,arrow="last",fill=LINE_COLOR_NORMAL)
+                self.__id = self.__canvas.create_line(self.Node_out.x,self.Node_out.y-RADUIS,self.Node_in.x,self.Node_in.y-RADUIS,arrow="last",fill=LINE_COLOR_NORMAL)
         else:
             if(self.Node_in.x < self.Node_out.x):
-                self.id = self.canvas.create_line(self.Node_out.x+RADUIS,self.Node_out.y,self.Node_in.x+RADUIS,self.Node_in.y,arrow="last",fill=LINE_COLOR_NORMAL)
+                self.__id = self.__canvas.create_line(self.Node_out.x+RADUIS,self.Node_out.y,self.Node_in.x+RADUIS,self.Node_in.y,arrow="last",fill=LINE_COLOR_NORMAL)
             else:
-                self.id = self.canvas.create_line(self.Node_out.x-RADUIS,self.Node_out.y,self.Node_in.x-RADUIS,self.Node_in.y,arrow="last",fill=LINE_COLOR_NORMAL)
+                self.__id = self.__canvas.create_line(self.Node_out.x-RADUIS,self.Node_out.y,self.Node_in.x-RADUIS,self.Node_in.y,arrow="last",fill=LINE_COLOR_NORMAL)
             
         self.add_label()
-        self.canvas.lower(self.id)
+        self.__canvas.lower(self.__id)
 
         return self
 
@@ -68,25 +68,25 @@ class Line(Element):
         self.Node_in.lines_in.remove(self)
         self.Node_out.lines_out.remove(self)
         self.Node_out.adj.remove(self.Node_in)
-        self.canvas.delete(self.id)
-        self.canvas.delete(self.label_id)
+        self.__canvas.delete(self.__id)
+        self.__canvas.delete(self.__label_id)
 
     def select(self):
 
-        self.canvas.itemconfig(self.id, fill=LINE_COLOR_SELECTED)
+        self.__canvas.itemconfig(self.__id, fill=LINE_COLOR_SELECTED)
 
     def deselect(self):
 
-        self.canvas.itemconfig(self.id, fill=LINE_COLOR_NORMAL)
+        self.__canvas.itemconfig(self.__id, fill=LINE_COLOR_NORMAL)
     
     def bind_event(self,callback,binded_event='<Button-1>'):
         
-        self.canvas.tag_bind(self.label_id,binded_event,lambda event, arg=self.id: callback(event, arg))
-        self.canvas.tag_bind(self.id, binded_event, lambda event, arg=self.id: callback(event, arg))
+        self.__canvas.tag_bind(self.__label_id,binded_event,lambda event, arg=self.__id: callback(event, arg))
+        self.__canvas.tag_bind(self.__id, binded_event, lambda event, arg=self.__id: callback(event, arg))
 
     def __str__(self):
 
-        return "line id: "+str(self.id) + " connecting:  "+str(self.Node_out) +" with "+str(self.Node_in) 
+        return "line id: "+str(self.__id) + " connecting:  "+str(self.Node_out) +" with "+str(self.Node_in) 
 
 
 class Node(Element):
@@ -97,19 +97,20 @@ class Node(Element):
         self.lines_out = [] # has all out lines 
         self.lines_in = [] # has all in lines
         self.__goal = goal # is this node a goal or not 
-        self.canvas = canvas # canvas object helps in drawing on screen
-        self.x = x # x coordinate of its center
-        self.y = y # y coordinate of its center
+        self.__canvas = canvas # canvas object helps in drawing on screen
+        self.__x = x # x coordinate of its center
+        self.__y = y # y coordinate of its center
         self.label = label # unique label used to identify each node used mainly in GUI 
-        self.initial = False
+        self.__initial = False # boolean value to define if this node is initial or not
 
     def set_initial(self):
-        self.initial = True
+
+        self.__initial = True
         self.__reset_color()
 
     def reset_initial(self):
         
-        self.initial = False
+        self.__initial = False
         self.__reset_color()
 
     def set_goal(self):
@@ -132,29 +133,29 @@ class Node(Element):
             raise DuplicateConnectionException()
             
         self.adj.append(node)
-        l = Line(self.canvas,self,node)
+        l = Line(self.__canvas,self,node)
         l.create()       
         self.lines_out.append(l)
         node.lines_in.append(l)
         return l
 
-    def __create_circle(self): #center coordinates, radius
+    def __create_circle(self): 
         
-        x0 = self.x - RADUIS
-        y0 = self.y - RADUIS
-        x1 = self.x + RADUIS
-        y1 = self.y + RADUIS
-        overlap = self.canvas.find_overlapping(x0, y0, x1, y1)
+        x0 = self.__x - RADUIS
+        y0 = self.__y - RADUIS
+        x1 = self.__x + RADUIS
+        y1 = self.__y + RADUIS
+        overlap = self.__canvas.find_overlapping(x0, y0, x1, y1)
         if len(overlap):
             raise OverlapException()
             
-        return self.canvas.create_oval(x0, y0, x1, y1,fill=CIRCLE_COLOR_NORMAL)
+        return self.__canvas.create_oval(x0, y0, x1, y1,fill=CIRCLE_COLOR_NORMAL)
 
 
     def create(self):
-        self.id = self.__create_circle()
-        self.label_id = self.canvas.create_text((self.x, self.y), text=self.label)
-        return self.id
+        self.__id = self.__create_circle()
+        self.__label_id = self.__canvas.create_text((self.__x, self.__y), text=self.label)
+        return self.__id
 
     
     def delete(self):
@@ -162,23 +163,23 @@ class Node(Element):
         for line in self.lines_in + self.lines_out:
             line.delete()
         
-        self.canvas.delete(self.id)
-        self.canvas.delete(self.label_id)
+        self.__canvas.delete(self.__id)
+        self.__canvas.delete(self.__label_id)
 
     def select(self):
 
-        self.canvas.itemconfig(self.id, fill=CIRCLE_COLOR_SELECTED)
+        self.__canvas.itemconfig(self.__id, fill=CIRCLE_COLOR_SELECTED)
 
     def __reset_color(self):
         
-        if self.__goal and self.initial:
-            self.canvas.itemconfig(self.id, fill=GOAL_INITIAL_COLOR)
-        elif self.initial:
-            self.canvas.itemconfig(self.id, fill=INITIAL_NODE_COLOR)
+        if self.__goal and self.__initial:
+            self.__canvas.itemconfig(self.__id, fill=GOAL_INITIAL_COLOR)
+        elif self.__initial:
+            self.__canvas.itemconfig(self.__id, fill=INITIAL_NODE_COLOR)
         elif self.__goal:
-            self.canvas.itemconfig(self.id, fill=GOAL_NODE_COLOR)
+            self.__canvas.itemconfig(self.__id, fill=GOAL_NODE_COLOR)
         else:
-            self.canvas.itemconfig(self.id, fill=CIRCLE_COLOR_NORMAL)
+            self.__canvas.itemconfig(self.__id, fill=CIRCLE_COLOR_NORMAL)
 
     def deselect(self):
         
@@ -186,12 +187,12 @@ class Node(Element):
         
 
     def bind_event(self,callback,binded_event='<Button-1>'):
-        self.canvas.tag_bind(self.id, binded_event, lambda event, arg=self.id: callback(event, arg))
-        self.canvas.tag_bind(self.label_id, binded_event, lambda event, arg=self.id: callback(event, arg))
+        self.__canvas.tag_bind(self.__id, binded_event, lambda event, arg=self.__id: callback(event, arg))
+        self.__canvas.tag_bind(self.__label_id, binded_event, lambda event, arg=self.__id: callback(event, arg))
 
     def __str__(self):
     
-        return str(self.id)
+        return str(self.__id)
 
 
     

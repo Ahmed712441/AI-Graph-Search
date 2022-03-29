@@ -1,7 +1,6 @@
-from textwrap import fill
 from tkinter import *
 from tkinter import messagebox
-from Node import Node , Line
+from Node import Node 
 from Buttons import Button_Bar
 from settings import mouse,Mouse_state,CANVAS_BACKGROUND_COLOR
 
@@ -45,13 +44,13 @@ class DrawingCanvas(Frame):
             
             if  isinstance(self.selected,Node):
                 for line in self.selected.lines_in + self.selected.lines_out:
-                    del self.objects[str(line.id)]
+                    del self.objects[str(line.get_id())]
             
             if self.selected == self.initial_node :
                 self.initial_node = None
 
             self.selected.delete() # get the node from the map and deletes it
-            del self.objects[str(self.selected.id)] 
+            del self.objects[str(self.selected.get_id())] 
             self.selected = None
             
          
@@ -114,7 +113,7 @@ class DrawingCanvas(Frame):
                 
             else :
                 # 5th case
-                if canvas_item_id == self.connection_node.id:
+                if canvas_item_id == self.connection_node.get_id():
                     
                     self.connection_node.deselect()
                     
@@ -125,7 +124,7 @@ class DrawingCanvas(Frame):
                         
                         line = self.connection_node.connect_node(self.objects[str(canvas_item_id)])
                         line.bind_event(self.line_clicked)
-                        self.objects[str(line.id)] =  line
+                        self.objects[str(line.get_id())] =  line
                         
                         self.connection_node.deselect()
                         self.connection_node = None
@@ -143,7 +142,7 @@ class DrawingCanvas(Frame):
                 self.selected.select()
                  
             # 5th case
-            elif self.selected.id == canvas_item_id:
+            elif self.selected.get_id() == canvas_item_id:
 
                 self.selected.deselect()
                 self.selected = None
@@ -194,7 +193,7 @@ class DrawingCanvas(Frame):
                 self.selected = self.objects[str(canvas_item_id)]
                 self.selected.select()
 
-            elif self.selected.id == canvas_item_id :
+            elif self.selected.get_id() == canvas_item_id :
                 
                 self.reset_selected()
             

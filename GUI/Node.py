@@ -3,6 +3,7 @@ from settings import *
 
 class Element:
 
+        
     @abstractmethod
     def create(self):
         pass
@@ -41,22 +42,27 @@ class Line(Element):
         x = (x1 + x2)//2
         y = (y1 + y2)//2
         self.__label_id = self.__canvas.create_text((x, y), text=self.weight)
-        
+
+    def get_id(self):
+        return self.__id
+
 
     def create(self):
-        
-        dy = abs(self.Node_in.y - self.Node_out.y)
-        dx = abs(self.Node_in.x - self.Node_out.x)
+        Node_in_x , Node_in_y = self.Node_in.get_coor()
+        Node_out_x , Node_out_y = self.Node_out.get_coor()
+
+        dy = abs(Node_in_y - Node_out_y)
+        dx = abs(Node_in_x - Node_out_x)
         if(dx > dy):
-            if(self.Node_in.y < self.Node_out.y):
-                self.__id = self.__canvas.create_line(self.Node_out.x,self.Node_out.y+RADUIS,self.Node_in.x,self.Node_in.y+RADUIS,arrow="last",fill=LINE_COLOR_NORMAL)
+            if(Node_in_y < Node_out_y):
+                self.__id = self.__canvas.create_line(Node_out_x,Node_out_y+RADUIS,Node_in_x,Node_in_y+RADUIS,arrow="last",fill=LINE_COLOR_NORMAL)
             else:
-                self.__id = self.__canvas.create_line(self.Node_out.x,self.Node_out.y-RADUIS,self.Node_in.x,self.Node_in.y-RADUIS,arrow="last",fill=LINE_COLOR_NORMAL)
+                self.__id = self.__canvas.create_line(Node_out_x,Node_out_y-RADUIS,Node_in_x,Node_in_y-RADUIS,arrow="last",fill=LINE_COLOR_NORMAL)
         else:
-            if(self.Node_in.x < self.Node_out.x):
-                self.__id = self.__canvas.create_line(self.Node_out.x+RADUIS,self.Node_out.y,self.Node_in.x+RADUIS,self.Node_in.y,arrow="last",fill=LINE_COLOR_NORMAL)
+            if(Node_in_x < Node_out_x):
+                self.__id = self.__canvas.create_line(Node_out_x+RADUIS,Node_out_y,Node_in_x+RADUIS,Node_in_y,arrow="last",fill=LINE_COLOR_NORMAL)
             else:
-                self.__id = self.__canvas.create_line(self.Node_out.x-RADUIS,self.Node_out.y,self.Node_in.x-RADUIS,self.Node_in.y,arrow="last",fill=LINE_COLOR_NORMAL)
+                self.__id = self.__canvas.create_line(Node_out_x-RADUIS,Node_out_y,Node_in_x-RADUIS,Node_in_y,arrow="last",fill=LINE_COLOR_NORMAL)
             
         self.add_label()
         self.__canvas.lower(self.__id)
@@ -139,6 +145,9 @@ class Node(Element):
         node.lines_in.append(l)
         return l
 
+    def get_coor(self):
+        return self.__x , self.__y
+
     def __create_circle(self): 
         
         x0 = self.__x - RADUIS
@@ -157,6 +166,8 @@ class Node(Element):
         self.__label_id = self.__canvas.create_text((self.__x, self.__y), text=self.label)
         return self.__id
 
+    def get_id(self):
+        return self.__id
     
     def delete(self):
         
@@ -194,5 +205,34 @@ class Node(Element):
     
         return str(self.__id)
 
+class TreeNode:
+
+    def __init__(self,treecanvas,node,level,parent,x,y):
+        
+        self.__treecanvas = treecanvas # canvas object helps to draw tree
+        self.__node = node # node object helps in visualiziation and concurrency
+        self.__level = level # level which the Node is drawn in
+        self.__x = x     # to avoid overlapping between childrens of another nodes 
+        self.__y = y  # to avoid overlapping between childrens of another nodes 
+        self.parent = parent # parent Node null if it's th root
+        self.children = [] # childrens of the node
+    
+    def __create_circle(self): 
+        
+        x0 = self.__x - RADUIS
+        y0 = self.__y - RADUIS
+        x1 = self.__x + RADUIS
+        y1 = self.__y + RADUIS
+        overlap = self.__canvas.find_overlapping(x0, y0, x1, y1)
+        if len(overlap):
+            raise OverlapException()
+            
+        return self.__canvas.create_oval(x0, y0, x1, y1,fill=CIRCLE_COLOR_NORMAL)        
+        
+    def create(self):
+
+        self.__id = self.__create_circle()
+        self.__label_id = self.__canvas.create_text((self.__x, self.__y), text=self.__node.label)
+        return self.__id
 
     

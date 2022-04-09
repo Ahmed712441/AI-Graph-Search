@@ -19,6 +19,13 @@ class TreeNodeTest:
         self.__right = right
         self.__max_width = right - left  
         self.__max_nodes = self.__max_width // TREE_NODE_RADUIS
+        self.__weight = 1
+
+    def weight(self):
+        return self.__weight
+
+    def add_weight(self):
+        self.__weight+=1
 
     def has_children(self):
         return len(self.__children) > 0
@@ -44,7 +51,7 @@ class TreeNodeTest:
         self.__max_nodes = self.__max_width // TREE_NODE_RADUIS
         self.move_to((right + left)/2)
         if len(self.__children) > 0:
-            self.__reset_children(len(self.__children))
+            self.reset_children(0)
 
     def __create_add_node(self,left,right):
 
@@ -52,35 +59,48 @@ class TreeNodeTest:
         node.draw()
         self.__children.append(node)
 
-    def __reset_margin(self,num_of_nodes):
+    def children_total_weight(self):
+        sum = 0
+        for child in self.__children:
+            sum += child.weight()
+        return sum
+
+    def __reset_margin(self,add_node:int):
         
-        node_width = self.__max_width / (num_of_nodes)     
+        nodes = self.children_total_weight()
+        node_width = self.__max_width / (nodes+add_node)     
         left_bounding = self.__left
         for child in self.__children:
-            right_bounding = left_bounding+node_width
+            right_bounding = left_bounding+node_width*child.weight()
             child.change_margins(left_bounding,right_bounding)
             left_bounding = right_bounding
 
         return right_bounding , node_width
 
-
-
-    def __reset_children(self,num_of_nodes):
+    def reset_children(self,add_node:int):
         
-        left_bounding,node_width = self.__reset_margin(num_of_nodes)
-        
-        if(num_of_nodes > len(self.__children)):
+        left_bounding,node_width = self.__reset_margin(add_node)
+ 
+        if(add_node > 0):
             right_bounding = left_bounding+node_width
             self.__create_add_node(left_bounding,right_bounding)
+            self.add_weight()
+            if self.__parent:
+                self.__parent.add_weight()
+        
 
+    def reset_parent(self):
+        if self.__parent:
+            self.__parent.reset_children(0)
+            self.__parent.reset_parent()
 
     def add_child(self):
         num_of_nodes = len(self.__children)
         if num_of_nodes == 0:
             self.__create_add_node(self.__left,self.__right)
         else:
-            if(num_of_nodes < self.__max_nodes):
-                self.__reset_children(len(self.__children)+1)
+            self.reset_children(1)
+            self.reset_parent()
 
     def __create_circle(self): 
         

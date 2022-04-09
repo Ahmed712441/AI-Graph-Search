@@ -19,8 +19,20 @@ class TreeCanvas(Frame):
         
     
     def draw_node(self):
-        pass
+        self.__id = self.__create_circle()
+    
 
+    def __create_circle(self): 
+        
+        x0 = self.__x - RADUIS
+        y0 = self.__y - RADUIS
+        x1 = self.__x + RADUIS
+        y1 = self.__y + RADUIS
+        overlap = self.__canvas.find_overlapping(x0, y0, x1, y1)
+        if len(overlap):
+            raise OverlapException()
+            
+        return self.__canvas.create_oval(x0, y0, x1, y1,fill=CIRCLE_COLOR_NORMAL)
 
 
 

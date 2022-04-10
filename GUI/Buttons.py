@@ -5,10 +5,10 @@ from settings import mouse,Mouse_state
 
 class Button_Bar(Frame) :
     
-    def __init__(self,root,width=400,height=400):
+    def __init__(self,root,width=300,height=400):
         
         Frame.__init__(self, root,width=width,height=height)
-        self.grid_propagate(0)
+        # self.grid_propagate(0)
         self.root = root
         
         circle_button = Button_Bar.create_button(self,os.path.join(os.getcwd(),'GUI','images','circle_resized.png'),self.circle_event)
@@ -23,6 +23,10 @@ class Button_Bar(Frame) :
         line_button.grid(column=0,row=1,padx=10, pady=10)
         inital_node_button.grid(column=0,row=2,padx=10, pady=10)
         goal_button.grid(column=0,row=3,padx=10, pady=10)
+        # circle_button.grid(column=0,row=0,sticky=(N,W,E,S))
+        # line_button.grid(column=0,row=1,sticky=(N,W,E,S))
+        # inital_node_button.grid(column=0,row=2,sticky=(N,W,E,S))
+        # goal_button.grid(column=0,row=3,sticky=(N,W,E,S))
 
     @staticmethod
     def create_button(parent,img_path,callback):
@@ -77,9 +81,9 @@ if __name__ == "__main__":
 
     # root.geometry("300x300") 
 
-    control = Button_Bar(root,500,500)
+    control = Button_Bar(root,50,280)
 
-    control.grid()
+    control.grid(sticky = "NSEW")
 
     root.mainloop()
 

@@ -36,7 +36,7 @@ class Line(Element):
         self.weight = weight
 
 
-    def add_label(self):
+    def __add_label(self):
 
         x1,y1,x2,y2 = self.__canvas.coords(self.__id)
         x = (x1 + x2)//2
@@ -64,7 +64,7 @@ class Line(Element):
             else:
                 self.__id = self.__canvas.create_line(Node_out_x-RADUIS,Node_out_y,Node_in_x-RADUIS,Node_in_y,arrow="last",fill=LINE_COLOR_NORMAL)
             
-        self.add_label()
+        self.__add_label()
         self.__canvas.lower(self.__id)
 
         return self
@@ -97,7 +97,7 @@ class Line(Element):
 
 class Node(Element):
 
-    def __init__(self,canvas,x,y,label,goal=False):
+    def __init__(self,canvas,x,y,label,heurastic=0,goal=False):
 
         self.adj = [] # carries adjancent nodes
         self.lines_out = [] # has all out lines 
@@ -108,6 +108,8 @@ class Node(Element):
         self.__y = y # y coordinate of its center
         self.label = label # unique label used to identify each node used mainly in GUI 
         self.__initial = False # boolean value to define if this node is initial or not
+        self.heurastic = heurastic
+        self.visited = False
 
     def set_initial(self):
 
@@ -203,7 +205,15 @@ class Node(Element):
 
     def __str__(self):
     
-        return str(self.__id)
+        return "Node("+ str(self.__id)+")"
 
+    def mark_active(self):
+        self.__canvas.itemconfig(self.__id, fill=ACTIVE_NODE_COLOR)
 
+    def mark_visited(self):
+        self.__canvas.itemconfig(self.__id, fill=VISITED_NODE_COLOR)
+        self.visited = True
+
+    def mark_fringe(self):
+        self.__canvas.itemconfig(self.__id, fill=FRINGE_NODE_COLOR)
     

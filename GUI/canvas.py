@@ -8,7 +8,7 @@ from settings import mouse,Mouse_state,CANVAS_BACKGROUND_COLOR
 
 class DrawingCanvas(Frame):
 
-    def __init__(self,root,width=200,height=200,canvas_width=1000,canvas_height=1000):
+    def __init__(self,root,width=400,height=400,canvas_width=1000,canvas_height=1000,event_root=None):
         '''
         constructor
         '''
@@ -16,23 +16,26 @@ class DrawingCanvas(Frame):
         self.count_nodes = 0 # this variable used to count nodes helpful in labeling nodes
         self.hor_scrollbar = Scrollbar(self, orient=HORIZONTAL)
         self.ver_scrollbar = Scrollbar(self, orient=VERTICAL)
-        self.canvas = Canvas(self,background=CANVAS_BACKGROUND_COLOR,scrollregion=(0, 0, canvas_width, canvas_height),yscrollcommand=self.ver_scrollbar.set,xscrollcommand=self.hor_scrollbar.set) # canvas object
+        self.canvas = Canvas(self,background=CANVAS_BACKGROUND_COLOR,height=height-20,width=width-20,scrollregion=(0, 0, canvas_width, canvas_height),yscrollcommand=self.ver_scrollbar.set,xscrollcommand=self.hor_scrollbar.set) # canvas object
         self.hor_scrollbar['command'] = self.canvas.xview
         self.ver_scrollbar['command'] = self.canvas.yview
-        self.control_bar = Button_Bar(self) # side bar which contains (circle,line) buttons and forms for editing nodes 
+        # self.control_bar = Button_Bar(self) # side bar which contains (circle,line) buttons and forms for editing nodes 
         self.connection_node = None # node which carry the id of previously selected node needed only in line case as line needs to connects two nodes so this is considered as the first node  
         self.objects = dict() # hash-map used for mapping objects_id (Lines and Nodes) on canvas to objects (Line or Node) 
         self.selected = None # carry the id of selected node to be edited , deleted
         self.initial_node = None # carry initial node
-        self.grid_propagate(0) # used to assures that frame will take its height and width even its children are smaller
+        # self.grid_propagate(0) # used to assures that frame will take its height and width even its children are smaller
+        # self.canvas.grid_propagate(0)
         self.canvas.grid(row=0,column=0,sticky=(N,W,E,S))  # places the canvas in row : 0 , column :0 in the frame
         self.hor_scrollbar.grid(column=0, row=1, sticky=(W,E))
         self.ver_scrollbar.grid(column=1, row=0, sticky=(N,S))
-        self.control_bar.grid(column=2,row=0) # places the control_bar in row : 0 , column :1 in the frame
+        # self.control_bar.grid(column=2,row=0,sticky=(N,W,E,S)) # places the control_bar in row : 0 , column :1 in the frame
         mouse.set_callback(self.undo_selection) # add callback function when mouse changes its state (event)
         self.canvas.bind("<ButtonPress-1>", self.mouse_clicked) # add callback function on click event for canvas
-        root.bind("<KeyPress>", self.key_pressed) # add callback function on keyboard press event for the whole window
-        
+        event_root =  event_root if event_root else root
+        event_root.bind("<KeyPress>", self.key_pressed) # add callback function on keyboard press event for the whole window
+        # self.rowconfigure(0,weight=1)
+        # self.columnconfigure(0,weight=1)
 
     def key_pressed(self,event):
         
@@ -203,7 +206,7 @@ class DrawingCanvas(Frame):
                 self.selected = self.objects[str(canvas_item_id)]
                 self.selected.select()
                 
-
+    
 
 
 
@@ -212,12 +215,12 @@ if __name__=="__main__":
 
 
     root =  Tk()
-    root.geometry("1000x1000")
+    root.geometry("1000x720")
+    b = Button_Bar(root)
+    can = DrawingCanvas(root,920,720)
 
-    can = DrawingCanvas(root,500,500)
-
-    can.grid()
-
+    can.grid(row=0,column=0)
+    b.grid(row=0,column=1,sticky="NSEW")
 
     root.mainloop()
 

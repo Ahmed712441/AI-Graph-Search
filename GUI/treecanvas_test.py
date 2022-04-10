@@ -1,5 +1,4 @@
 from tkinter import *
-from turtle import right
 from settings import *
 
 '''
@@ -8,7 +7,7 @@ testing file for tree drawing algorithm
 
 class TreeNodeTest:
 
-    def __init__(self,treecanvas,level,parent,left,right):
+    def __init__(self,treecanvas,level,parent,left,right,Line=None):
         self.__canvas = treecanvas
         self.__level = level
         self.__x = (left+right)/2
@@ -18,14 +17,20 @@ class TreeNodeTest:
         self.__left = left
         self.__right = right
         self.__max_width = right - left  
-        self.__max_nodes = self.__max_width // TREE_NODE_RADUIS
         self.__weight = 1
+        self.__parent_line = Line
 
+    def set_parent_line(self,Line):
+
+        self.__parent_line = Line
+    
     def weight(self):
         return self.__weight
 
-    def add_weight(self):
-        self.__weight+=1
+    def add_weight(self,added=1):
+        self.__weight+=added
+        if self.__parent:
+            self.__parent.add_weight()
 
     def has_children(self):
         return len(self.__children) > 0
@@ -48,16 +53,32 @@ class TreeNodeTest:
         self.__left = left
         self.__right = right
         self.__max_width = right - left
-        self.__max_nodes = self.__max_width // TREE_NODE_RADUIS
         self.move_to((right + left)/2)
-        if len(self.__children) > 0:
+        self.move_line()
+        if len(self.__children) > 0 :
             self.reset_children(0)
+
+    def move_line(self):
+        x,y = self.__parent.get_coor()
+        self.__canvas.coords(self.__parent_line,x,y+TREE_NODE_RADUIS,self.__x,self.__y-TREE_NODE_RADUIS)
+    
+    def get_coor(self):
+        return self.__x , self.__y
+
+
+    def create_line(self,child_coor):
+        return self.__canvas.create_line(self.__x , self.__y+TREE_NODE_RADUIS,child_coor[0],child_coor[1]-TREE_NODE_RADUIS,arrow="last",fill=LINE_COLOR_NORMAL)
 
     def __create_add_node(self,left,right):
 
+        
         node = TreeNodeTest(self.__canvas,self.__level+1,self,left,right)
         node.draw()
+        line = self.create_line(node.get_coor())
+        node.set_parent_line(line)
         self.__children.append(node)
+        
+        
 
     def children_total_weight(self):
         sum = 0
@@ -84,23 +105,32 @@ class TreeNodeTest:
         if(add_node > 0):
             right_bounding = left_bounding+node_width
             self.__create_add_node(left_bounding,right_bounding)
-            self.add_weight()
-            if self.__parent:
-                self.__parent.add_weight()
-        
-
+            
+            
     def reset_parent(self):
         if self.__parent:
-            self.__parent.reset_children(0)
             self.__parent.reset_parent()
+        else:
+            self.reset_children(0)
+    
+    
 
+    def add_children(self,num_of_nodes=3):
+        
+        for node in range(0,num_of_nodes):
+            self.add_child()
+        
+    
     def add_child(self):
+        
         num_of_nodes = len(self.__children)
         if num_of_nodes == 0:
             self.__create_add_node(self.__left,self.__right)
         else:
-            self.reset_children(1)
+            self.add_weight()
             self.reset_parent()
+            self.reset_children(1)
+            
 
     def __create_circle(self): 
         
@@ -112,7 +142,7 @@ class TreeNodeTest:
         return self.__canvas.create_oval(x0, y0, x1, y1,fill=CIRCLE_COLOR_NORMAL)
 
     def bind_event(self):
-        self.__canvas.tag_bind(self.__id,'<Button-1>',lambda x : self.add_child())
+        self.__canvas.tag_bind(self.__id,'<Button-1>',lambda x : self.add_children())
 
 
 class TreeCanvasTest(Frame):
@@ -130,10 +160,7 @@ class TreeCanvasTest(Frame):
         self.canvas.grid(row=0,column=0,sticky=(N,W,E,S))  # places the canvas in row : 0 , column :0 in the frame
         self.hor_scrollbar.grid(column=0, row=1, sticky=(W,E))
         self.ver_scrollbar.grid(column=1, row=0, sticky=(N,S))
-        # self.canvas.bind('<Button-1>',lambda event : print(event.x,event.y))
-    
-    def draw_node(self):
-        pass
+        
 
 
 if __name__=="__main__":

@@ -9,31 +9,16 @@ class TreeCanvas(Frame):
         self.count_nodes = 0 # this variable used to count nodes helpful in labeling nodes
         self.hor_scrollbar = Scrollbar(self, orient=HORIZONTAL)
         self.ver_scrollbar = Scrollbar(self, orient=VERTICAL)
-        self.canvas = Canvas(self,height=height-100,width=width-100,background=CANVAS_BACKGROUND_COLOR,scrollregion=(0, 0, canvas_width, canvas_height),yscrollcommand=self.ver_scrollbar.set,xscrollcommand=self.hor_scrollbar.set) # canvas object
+        self.canvas = Canvas(self,height=height-20,width=width-20,background=CANVAS_BACKGROUND_COLOR,scrollregion=(0, 0, canvas_width, canvas_height),yscrollcommand=self.ver_scrollbar.set,xscrollcommand=self.hor_scrollbar.set) # canvas object
         self.hor_scrollbar['command'] = self.canvas.xview
         self.ver_scrollbar['command'] = self.canvas.yview
-        self.grid_propagate(0) # used to assures that frame will take its height and width even its children are smaller
+        # self.grid_propagate(0) # used to assures that frame will take its height and width even its children are smaller
         self.canvas.grid(row=0,column=0,sticky=(N,W,E,S))  # places the canvas in row : 0 , column :0 in the frame
         self.hor_scrollbar.grid(column=0, row=1, sticky=(W,E))
         self.ver_scrollbar.grid(column=1, row=0, sticky=(N,S))
         
     
-    def draw_node(self):
-        self.__id = self.__create_circle()
-    
-
-    def __create_circle(self): 
         
-        x0 = self.__x - RADUIS
-        y0 = self.__y - RADUIS
-        x1 = self.__x + RADUIS
-        y1 = self.__y + RADUIS
-        overlap = self.__canvas.find_overlapping(x0, y0, x1, y1)
-        if len(overlap):
-            raise OverlapException()
-            
-        return self.__canvas.create_oval(x0, y0, x1, y1,fill=CIRCLE_COLOR_NORMAL)
-
 
 
 

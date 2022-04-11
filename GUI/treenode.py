@@ -1,10 +1,10 @@
 from settings import *
-from abc import abstractmethod
+from Node import InteractionInterface
 
-
-class TreeNodeDrawing:
+class TreeNodeDrawing(InteractionInterface):
 
     def __init__(self,treecanvas,level,parent,left,right,sub_class,Line=None):
+        super(TreeNodeDrawing,self).__init__(treecanvas)
         self.__canvas = treecanvas
         self.__level = level
         self.__x = (left+right)/2
@@ -17,7 +17,11 @@ class TreeNodeDrawing:
         self.__weight = 1
         self.__parent_line = Line
         self.__sub_class = sub_class
+        self.__has_cross = False
         self.draw()
+    
+    def set_cross(self):
+        self.__has_cross = True
 
     def getchildren(self):
         return self.__children
@@ -39,16 +43,19 @@ class TreeNodeDrawing:
 
     def draw(self):
         self.__id = self.__create_circle()
-       
+        super(TreeNodeDrawing,self).set_id(self.__id)
     
     def delete(self):
         self.__canvas.delete(self.__id)
+
 
     def move_to(self,new_x):
         
         diff = new_x - self.__x 
         self.__x = new_x
         self.__canvas.move(self.__id,diff,0)
+        if self.__has_cross:
+            self.move_cross()
     
     def change_margins(self,left,right):
        
@@ -137,18 +144,30 @@ class TreeNodeDrawing:
          
         return self.__canvas.create_oval(x0, y0, x1, y1,fill=CIRCLE_COLOR_NORMAL)
 
-    def mark_active(self):
-        self.__canvas.itemconfig(self.__id, fill=ACTIVE_NODE_COLOR)
+    # def mark_active(self):
+    #     self.__canvas.itemconfig(self.__id, fill=ACTIVE_NODE_COLOR)
 
-    def mark_visited(self):
-        self.__canvas.itemconfig(self.__id, fill=VISITED_NODE_COLOR)
+    # def mark_visited(self):
+    #     self.__canvas.itemconfig(self.__id, fill=VISITED_NODE_COLOR)
 
-    def mark_fringe(self):
-        self.__canvas.itemconfig(self.__id, fill=FRINGE_NODE_COLOR)
+    # def mark_fringe(self):
+    #     self.__canvas.itemconfig(self.__id, fill=FRINGE_NODE_COLOR)
     
-    def mark_goal_path(self):
-        self.__canvas.itemconfig(self.__id, fill=GOAL_PATH_COLOR)
+    # def mark_goal_path(self):
+    #     self.__canvas.itemconfig(self.__id, fill=GOAL_PATH_COLOR)
+    
+    # def __draw_cross(self):
+    #     self.__has_cross = True
+    #     self.__cross_line1 = self.__canvas.create_line(self.__x+CROSS_DISTANCE , self.__y+CROSS_DISTANCE,self.__x-CROSS_DISTANCE , self.__y-CROSS_DISTANCE,fill=ALREADY_VISITED_COLOR)
+    #     self.__cross_line2 = self.__canvas.create_line(self.__x-CROSS_DISTANCE , self.__y+CROSS_DISTANCE,self.__x+CROSS_DISTANCE , self.__y-CROSS_DISTANCE,fill=ALREADY_VISITED_COLOR)
 
+    # def __move_cross(self):
+    #     self.__canvas.coords(self.__cross_line1,self.__x+CROSS_DISTANCE , self.__y+CROSS_DISTANCE,self.__x-CROSS_DISTANCE , self.__y-CROSS_DISTANCE)
+    #     self.__canvas.coords(self.__cross_line2,self.__x-CROSS_DISTANCE , self.__y+CROSS_DISTANCE,self.__x+CROSS_DISTANCE , self.__y-CROSS_DISTANCE)
+
+    # def mark_already_visited(self):
+    #     self.__draw_cross()
+        
     def get_parent(self):
         return self.__parent
 

@@ -42,9 +42,12 @@ class Algorithm(threading.Thread):
         '''
         normal implementation to pick new node        
         ''' 
+        self.current_node.mark_visited()
+        self.current_node = self.fringe.pop(0)
         try: 
             while self.current_node.is_visited():
-                self.current_node.mark_visited()
+                self.current_node.mark_already_visited()
+                time.sleep(1)
                 self.current_node = self.fringe.pop(0)
         except:
             self.current_node = None

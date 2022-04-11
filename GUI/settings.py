@@ -52,8 +52,7 @@ class Mouse_state:
 
 mouse = Mouse_state()
 
-RADUIS = 40
-
+RADUIS = 30
 CIRCLE_COLOR_NORMAL = "#0f0"
 LINE_COLOR_NORMAL = "#fff"
 CIRCLE_COLOR_SELECTED = "blue"
@@ -70,6 +69,7 @@ VISITED_NODE_COLOR = 'black'
 FRINGE_NODE_COLOR = 'yellow'
 ALREADY_VISITED_COLOR = 'red'
 GOAL_PATH_COLOR = 'purple'
+CROSS_DISTANCE = TREE_NODE_RADUIS* 0.7071 # cos,sin(45)
 
 
 

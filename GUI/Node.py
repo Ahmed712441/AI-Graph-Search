@@ -25,6 +25,41 @@ class Element:
         pass
 
 
+class InteractionInterface:
+    
+    def __init__(self,canvas):
+        
+        self.__canvas = canvas
+    
+    def set_id(self,id):
+        self.__id = id
+
+    def mark_active(self):
+        self.__canvas.itemconfig(self.__id, fill=ACTIVE_NODE_COLOR)
+
+    def mark_visited(self):
+        self.__canvas.itemconfig(self.__id, fill=VISITED_NODE_COLOR)
+
+    def mark_fringe(self):
+        self.__canvas.itemconfig(self.__id, fill=FRINGE_NODE_COLOR)
+    
+    def mark_goal_path(self):
+        self.__canvas.itemconfig(self.__id, fill=GOAL_PATH_COLOR)
+    
+    def mark_already_visited(self):
+        self.__draw_cross()
+    
+    def __draw_cross(self):
+        self.set_cross()
+        x,y = self.get_coor()
+        self.__cross_line1 = self.__canvas.create_line(x+CROSS_DISTANCE , y+CROSS_DISTANCE,x-CROSS_DISTANCE , y-CROSS_DISTANCE,fill=ALREADY_VISITED_COLOR)
+        self.__cross_line2 = self.__canvas.create_line(x-CROSS_DISTANCE , y+CROSS_DISTANCE,x+CROSS_DISTANCE , y-CROSS_DISTANCE,fill=ALREADY_VISITED_COLOR)
+    
+    def move_cross(self):
+        x,y = self.get_coor()
+        self.__canvas.coords(self.__cross_line1,x+CROSS_DISTANCE , y+CROSS_DISTANCE,x-CROSS_DISTANCE , y-CROSS_DISTANCE)
+        self.__canvas.coords(self.__cross_line2,x-CROSS_DISTANCE , y+CROSS_DISTANCE,x+CROSS_DISTANCE , y-CROSS_DISTANCE)
+
 class Line(Element):
 
     def __init__(self,canvas,Node_out,Node_in,weight=1):

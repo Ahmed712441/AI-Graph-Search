@@ -206,8 +206,20 @@ class DrawingCanvas(Frame):
                 self.selected = self.objects[str(canvas_item_id)]
                 self.selected.select()
                 
-    
+    def reset(self):
+        for _,element in self.objects.items():
+            element.reset()
 
+    def delete_all(self):
+
+        self.count_nodes = 0 
+        self.connection_node = None 
+        del self.objects
+        self.objects = dict()  
+        self.selected = None
+        self.initial_node = None
+        self.canvas.delete("all")
+        
 
 
 

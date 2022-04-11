@@ -1,5 +1,6 @@
 from settings import *
 from Node import InteractionInterface
+import time
 
 class TreeNodeDrawing(InteractionInterface):
 
@@ -15,20 +16,18 @@ class TreeNodeDrawing(InteractionInterface):
         self.__right = right
         self.__max_width = right - left  
         self.__weight = 1
-        self.__parent_line = Line
+        self.__parent_canvas_line = Line
         self.__sub_class = sub_class
-        self.__has_cross = False
+        # self.has_cross = False
         self.draw()
     
-    def set_cross(self):
-        self.__has_cross = True
-
     def getchildren(self):
         return self.__children
 
     def set_parent_line(self,Line):
 
         self.__parent_line = Line
+        self.__parent_canvas_line.set_brother(self.__parent_line,self.__canvas)
     
     def weight(self):
         return self.__weight
@@ -54,7 +53,7 @@ class TreeNodeDrawing(InteractionInterface):
         diff = new_x - self.__x 
         self.__x = new_x
         self.__canvas.move(self.__id,diff,0)
-        if self.__has_cross:
+        if self.has_cross:
             self.move_cross()
     
     def change_margins(self,left,right):
@@ -78,10 +77,10 @@ class TreeNodeDrawing(InteractionInterface):
     def create_line(self,child_coor):
         return self.__canvas.create_line(self.__x , self.__y+TREE_NODE_RADUIS,child_coor[0],child_coor[1]-TREE_NODE_RADUIS,arrow="last",fill=LINE_COLOR_NORMAL)
 
-    def __create_add_node(self,left,right,node):
+    def __create_add_node(self,left,right,node,line):
 
         
-        node = self.__sub_class(self.__canvas,self.__level+1,self,left,right,node)
+        node = self.__sub_class(self.__canvas,self.__level+1,self,left,right,node,line)
         line = self.create_line(node.get_coor())
         node.set_parent_line(line)
         self.__children.append(node)
@@ -104,13 +103,13 @@ class TreeNodeDrawing(InteractionInterface):
 
         return right_bounding , node_width
 
-    def reset_children(self,add_node:int,node=None):
+    def reset_children(self,add_node:int,node=None,line=None):
         
         left_bounding,node_width = self.__reset_margin(add_node)
  
         if(add_node > 0):
             right_bounding = left_bounding+node_width
-            self.__create_add_node(left_bounding,right_bounding,node)
+            self.__create_add_node(left_bounding,right_bounding,node,line)
             
             
     def reset_parent(self):
@@ -120,19 +119,20 @@ class TreeNodeDrawing(InteractionInterface):
             self.reset_children(0)
             
 
-    def add_children(self,nodes):
-        for node in nodes:
-            self.__add_child(node)
+    def add_children(self,nodes,lines):
+        for i in range(len(nodes)):
+            self.__add_child(nodes[i],lines[i])
+            
 
-    def __add_child(self,node):
+    def __add_child(self,node,line):
         
         num_of_nodes = len(self.__children)
         if num_of_nodes == 0:
-            self.__create_add_node(self.__left,self.__right,node)
+            self.__create_add_node(self.__left,self.__right,node,line)
         else:
             self.add_weight()
             self.reset_parent()
-            self.reset_children(1,node)
+            self.reset_children(1,node,line)
             
 
     def __create_circle(self): 
@@ -143,43 +143,18 @@ class TreeNodeDrawing(InteractionInterface):
         y1 = self.__y + TREE_NODE_RADUIS
          
         return self.__canvas.create_oval(x0, y0, x1, y1,fill=CIRCLE_COLOR_NORMAL)
-
-    # def mark_active(self):
-    #     self.__canvas.itemconfig(self.__id, fill=ACTIVE_NODE_COLOR)
-
-    # def mark_visited(self):
-    #     self.__canvas.itemconfig(self.__id, fill=VISITED_NODE_COLOR)
-
-    # def mark_fringe(self):
-    #     self.__canvas.itemconfig(self.__id, fill=FRINGE_NODE_COLOR)
-    
-    # def mark_goal_path(self):
-    #     self.__canvas.itemconfig(self.__id, fill=GOAL_PATH_COLOR)
-    
-    # def __draw_cross(self):
-    #     self.__has_cross = True
-    #     self.__cross_line1 = self.__canvas.create_line(self.__x+CROSS_DISTANCE , self.__y+CROSS_DISTANCE,self.__x-CROSS_DISTANCE , self.__y-CROSS_DISTANCE,fill=ALREADY_VISITED_COLOR)
-    #     self.__cross_line2 = self.__canvas.create_line(self.__x-CROSS_DISTANCE , self.__y+CROSS_DISTANCE,self.__x+CROSS_DISTANCE , self.__y-CROSS_DISTANCE,fill=ALREADY_VISITED_COLOR)
-
-    # def __move_cross(self):
-    #     self.__canvas.coords(self.__cross_line1,self.__x+CROSS_DISTANCE , self.__y+CROSS_DISTANCE,self.__x-CROSS_DISTANCE , self.__y-CROSS_DISTANCE)
-    #     self.__canvas.coords(self.__cross_line2,self.__x-CROSS_DISTANCE , self.__y+CROSS_DISTANCE,self.__x+CROSS_DISTANCE , self.__y-CROSS_DISTANCE)
-
-    # def mark_already_visited(self):
-    #     self.__draw_cross()
         
     def get_parent(self):
         return self.__parent
 
-
 class TreeNode(TreeNodeDrawing):
 
     
-    def __init__(self,treecanvas,level,parent,left,right,node,value=0) -> None:
-        super(TreeNode,self).__init__(treecanvas,level,parent,left,right,TreeNode)
+    def __init__(self,treecanvas,level,parent,left,right,node,Line=None,value=0) -> None:
+        super(TreeNode,self).__init__(treecanvas,level,parent,left,right,TreeNode,Line)
         self.__node = node
         self.value = value   
-    
+        self.__line = Line
 
     def __lt__(self, other):
         return self.value < other.value
@@ -187,7 +162,7 @@ class TreeNode(TreeNodeDrawing):
     def expand_node(self):
 
         if self.__node.adj:
-            super(TreeNode,self).add_children(self.__node.adj)
+            super(TreeNode,self).add_children(self.__node.adj,self.__node.lines_out)
             children = super(TreeNode,self).getchildren()
             for child in children:
                 child.mark_fringe()
@@ -204,11 +179,27 @@ class TreeNode(TreeNodeDrawing):
     def is_goal(self):
         return self.__node.is_goal()
     
+    def __activate_line(self):
+        if self.__line:
+            self.__line.set_active()
+            time.sleep(1)
+
+    def __deactivate_line(self):
+        if self.__line:
+            self.__line.reset_line()
+    
+    def __goal_line(self):
+        if self.__line:
+            self.__line.set_goal_path()
+
     def mark_active(self):
+        self.__activate_line()
         super(TreeNode,self).mark_active()
         self.__node.mark_active()
+        
 
     def mark_visited(self):
+        self.__deactivate_line()
         super(TreeNode,self).mark_visited()
         self.__node.mark_visited()
     
@@ -219,6 +210,7 @@ class TreeNode(TreeNodeDrawing):
     def mark_goal_path(self):
         super().mark_goal_path()
         self.__node.mark_goal_path()
+        self.__goal_line()
 
     def is_visited(self):
         return self.__node.visited
@@ -231,3 +223,8 @@ class TreeNode(TreeNodeDrawing):
             return parent.path_to_root() + "-->" + self.__node.label  
         else:
             return self.__node.label
+
+    def mark_already_visited(self):
+        self.__deactivate_line()
+        super().mark_already_visited()
+        self.__node.mark_already_visited()

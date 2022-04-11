@@ -74,6 +74,28 @@ class Button_Bar(Frame) :
             self.root.config(cursor="target")
 
 
+class InteractionButtons(Frame):
+
+    def __init__(self,root,pause_callback,start_callback,terminate_callback,delete_callback,width=300,height=400):
+        
+        Frame.__init__(self, root,width=width,height=height)
+        self.pause = Button_Bar.create_button(self,os.path.join(os.getcwd(),'GUI','images','pause_icon.png'),pause_callback)
+        self.resume = Button_Bar.create_button(self,os.path.join(os.getcwd(),'GUI','images','resume_icon.png'),start_callback)
+        self.terminate = Button_Bar.create_button(self,os.path.join(os.getcwd(),'GUI','images','terminate.png'),terminate_callback)
+        self.delete = Button_Bar.create_button(self,os.path.join(os.getcwd(),'GUI','images','delete_icon.png'),delete_callback)
+        self.pause.config(state=DISABLED)
+        self.resume.config(state=DISABLED)
+        self.terminate.config(state=DISABLED)
+        self.delete.config(state=DISABLED)
+        self.pack_on_screen()
+
+    def pack_on_screen(self):
+        self.resume.grid(row=0,column=0)
+        self.pause.grid(row=0,column=1)
+        self.terminate.grid(row=0,column=2)
+        self.delete.grid(row=0,column=3)
+        
+
 
 if __name__ == "__main__":
 
@@ -81,8 +103,11 @@ if __name__ == "__main__":
 
     # root.geometry("300x300") 
 
-    control = Button_Bar(root,50,280)
+    # control = Button_Bar(root,50,280)
 
+    # control.grid(sticky = "NSEW")
+
+    control = InteractionButtons(root,None,None,None,None)
     control.grid(sticky = "NSEW")
 
     root.mainloop()

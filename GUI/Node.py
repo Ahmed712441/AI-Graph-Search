@@ -1,64 +1,6 @@
 from abc import abstractmethod
 from settings import *
-
-class Element:
-
-        
-    @abstractmethod
-    def create(self):
-        pass
-
-    @abstractmethod
-    def delete(self):
-        pass
-    
-    @abstractmethod
-    def select(self):
-        pass
-
-    @abstractmethod
-    def deselect(self):
-        pass
-
-    @abstractmethod
-    def bind_event(self,callback):
-        pass
-
-
-class InteractionInterface:
-    
-    def __init__(self,canvas):
-        
-        self.__canvas = canvas
-    
-    def set_id(self,id):
-        self.__id = id
-
-    def mark_active(self):
-        self.__canvas.itemconfig(self.__id, fill=ACTIVE_NODE_COLOR)
-
-    def mark_visited(self):
-        self.__canvas.itemconfig(self.__id, fill=VISITED_NODE_COLOR)
-
-    def mark_fringe(self):
-        self.__canvas.itemconfig(self.__id, fill=FRINGE_NODE_COLOR)
-    
-    def mark_goal_path(self):
-        self.__canvas.itemconfig(self.__id, fill=GOAL_PATH_COLOR)
-    
-    def mark_already_visited(self):
-        self.__draw_cross()
-    
-    def __draw_cross(self):
-        self.set_cross()
-        x,y = self.get_coor()
-        self.__cross_line1 = self.__canvas.create_line(x+CROSS_DISTANCE , y+CROSS_DISTANCE,x-CROSS_DISTANCE , y-CROSS_DISTANCE,fill=ALREADY_VISITED_COLOR)
-        self.__cross_line2 = self.__canvas.create_line(x-CROSS_DISTANCE , y+CROSS_DISTANCE,x+CROSS_DISTANCE , y-CROSS_DISTANCE,fill=ALREADY_VISITED_COLOR)
-    
-    def move_cross(self):
-        x,y = self.get_coor()
-        self.__canvas.coords(self.__cross_line1,x+CROSS_DISTANCE , y+CROSS_DISTANCE,x-CROSS_DISTANCE , y-CROSS_DISTANCE)
-        self.__canvas.coords(self.__cross_line2,x-CROSS_DISTANCE , y+CROSS_DISTANCE,x+CROSS_DISTANCE , y-CROSS_DISTANCE)
+from Interfaces import Element,InteractionInterface
 
 class Line(Element):
 
@@ -104,6 +46,31 @@ class Line(Element):
 
         return self
 
+    def set_brother(self,line_id,treecanvas):
+        self.__tree_line = line_id
+        self.__tree_canvas = treecanvas
+
+    def reset(self):
+        self.__tree_line = None
+        self.__tree_canvas = None
+        self.deselect()
+    
+    def set_active(self):
+
+        self.__canvas.itemconfig(self.__id, fill=ACTIVE_LINE_COLOR)
+        self.__tree_canvas.itemconfig(self.__tree_line, fill=ACTIVE_LINE_COLOR)
+    
+    def set_goal_path(self):
+
+        self.__canvas.itemconfig(self.__id, fill=GOAL_PATH_LINE_COLOR)
+        self.__tree_canvas.itemconfig(self.__tree_line, fill=GOAL_PATH_LINE_COLOR)
+    
+    def reset_line(self):
+
+        self.__canvas.itemconfig(self.__id, fill=LINE_COLOR_NORMAL)
+        self.__tree_canvas.itemconfig(self.__tree_line, fill=LINE_COLOR_NORMAL)
+    
+
     def delete(self):
         
         self.Node_in.lines_in.remove(self)
@@ -111,6 +78,8 @@ class Line(Element):
         self.Node_out.adj.remove(self.Node_in)
         self.__canvas.delete(self.__id)
         self.__canvas.delete(self.__label_id)
+
+
 
     def select(self):
 
@@ -130,10 +99,10 @@ class Line(Element):
         return "line id: "+str(self.__id) + " connecting:  "+str(self.Node_out) +" with "+str(self.Node_in) 
 
 
-class Node(Element):
+class Node(Element,InteractionInterface):
 
     def __init__(self,canvas,x,y,label,heurastic=0,goal=False):
-
+        super(Node,self).__init__(canvas)
         self.adj = [] # carries adjancent nodes
         self.lines_out = [] # has all out lines 
         self.lines_in = [] # has all in lines
@@ -201,6 +170,7 @@ class Node(Element):
     def create(self):
         self.__id = self.__create_circle()
         self.__label_id = self.__canvas.create_text((self.__x, self.__y), text=self.label)
+        super(Node,self).set_id(self.__id)
         return self.__id
 
     def get_id(self):
@@ -240,17 +210,13 @@ class Node(Element):
 
     def __str__(self):
     
-        return "Node("+ str(self.__id)+")"
-
-    def mark_active(self):
-        self.__canvas.itemconfig(self.__id, fill=ACTIVE_NODE_COLOR)
+        return "Node("+ str(self.label)+")"
 
     def mark_visited(self):
-        self.__canvas.itemconfig(self.__id, fill=VISITED_NODE_COLOR)
+        super().mark_visited()
         self.visited = True
-
-    def mark_fringe(self):
-        self.__canvas.itemconfig(self.__id, fill=FRINGE_NODE_COLOR)
     
-    def mark_goal_path(self):
-        self.__canvas.itemconfig(self.__id, fill=GOAL_PATH_COLOR)
+    def reset(self):
+        self.__reset_color()
+        self.visited = False
+        

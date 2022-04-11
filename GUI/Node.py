@@ -217,3 +217,5 @@ class Node(Element):
     def mark_fringe(self):
         self.__canvas.itemconfig(self.__id, fill=FRINGE_NODE_COLOR)
     
+    def mark_goal_path(self):
+        self.__canvas.itemconfig(self.__id, fill=GOAL_PATH_COLOR)

@@ -5,7 +5,7 @@ import time
 
 class Algorithm(threading.Thread):
 
-    def __init__(self, inital_node ,*args, **kwargs):
+    def __init__(self, inital_node,thread_callback ,*args, **kwargs):
         super(Algorithm, self).__init__(*args, **kwargs)
         self.__flag = threading.Event() # The flag used to pause the thread
         self.__flag.set() # Set to True
@@ -13,6 +13,7 @@ class Algorithm(threading.Thread):
         self.__running.set() # Set running to True
         self.current_node = inital_node
         self.fringe = []
+        self.__callback = thread_callback
         
     
     def expand_node(self):
@@ -57,8 +58,8 @@ class Algorithm(threading.Thread):
             time.sleep(2)
             if(self.check_node()): # check if node is goal or not
                 self.current_node.mark_visited()
-                print("goal found") # this will be changed to be displayed on label
-                return # finish the thread
+                self.__callback(self.current_node.path_to_root(True))
+                return
             self.expand_node() # expand node
             self.current_node.mark_visited() # change node color to visited node
             self.pick_node() # pick new node from the fringe

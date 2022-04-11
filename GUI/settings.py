@@ -69,5 +69,7 @@ ACTIVE_NODE_COLOR = 'orange'
 VISITED_NODE_COLOR = 'black'
 FRINGE_NODE_COLOR = 'yellow'
 ALREADY_VISITED_COLOR = 'red'
+GOAL_PATH_COLOR = 'purple'
+
 
 

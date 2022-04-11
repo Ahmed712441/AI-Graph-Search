@@ -145,30 +145,12 @@ class TreeNodeDrawing:
 
     def mark_fringe(self):
         self.__canvas.itemconfig(self.__id, fill=FRINGE_NODE_COLOR)
-
-class TreeNodeInterface:
-
-    @abstractmethod
-    def expand_node(self):
-        pass    
     
-    @abstractmethod
-    def check_node(self):
-        pass
-    
-    @abstractmethod
-    def mark_active(self):
-        pass
-    
-    @abstractmethod
-    def mark_visited(self):
-        pass
+    def mark_goal_path(self):
+        self.__canvas.itemconfig(self.__id, fill=GOAL_PATH_COLOR)
 
-    @abstractmethod
-    def pick_node(self):
-        pass
-
-
+    def get_parent(self):
+        return self.__parent
 
 
 class TreeNode(TreeNodeDrawing):
@@ -176,7 +158,6 @@ class TreeNode(TreeNodeDrawing):
     
     def __init__(self,treecanvas,level,parent,left,right,node,value=0) -> None:
         super(TreeNode,self).__init__(treecanvas,level,parent,left,right,TreeNode)
-        # super(TreeNode,self).__init__(treecanvas,level,parent,left,right,TreeNode)
         self.__node = node
         self.value = value   
     
@@ -216,6 +197,18 @@ class TreeNode(TreeNodeDrawing):
         super(TreeNode,self).mark_fringe()
         self.__node.mark_fringe()
     
+    def mark_goal_path(self):
+        super().mark_goal_path()
+        self.__node.mark_goal_path()
+
     def is_visited(self):
         return self.__node.visited
     
+    def path_to_root(self,mark=True):
+        parent = self.get_parent()
+        if mark:
+            self.mark_goal_path()
+        if parent:
+            return parent.path_to_root() + "-->" + self.__node.label  
+        else:
+            return self.__node.label

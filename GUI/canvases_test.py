@@ -8,9 +8,8 @@ from tkinter.ttk import *
 from treecanvas import TreeCanvas
 from canvas import DrawingCanvas
 from Buttons import *
-from Algorithms.base_class import BreadthSearchFirst,DepthFirstSearch
 from treenode import TreeNode
-from utils import mouse , Mouse_state
+from radio_buttons import AlgorithmsRadioButtons
 
 class MainCanvas(Frame):
 
@@ -34,31 +33,42 @@ class MainCanvas(Frame):
         self.__Name_text = Text(self,height = 1,width=2,padx=10,pady=10)
         self.__Name_text.insert(END, "Change node name")
         self.__Name_text.config(state=DISABLED)
-        self.__button = Button(self ,text="breadth search first" , command=self.breadth_search_first)
         self.__current_thread = None   
-        self.pack_on_screen()
+        self.__radio_buttons = AlgorithmsRadioButtons(self,self.__submit_callback)
+
+        self.__pack_on_screen()
     
+    def __submit_callback(self,thread_class,**kwargs):
+        if self.__drawing_canvas.initial_node and not self.__current_thread:
+            initial_node = TreeNode(self.__tree_canvas.canvas,0,None,0,self.__tree_canvas.canvas.winfo_width(),self.__drawing_canvas.initial_node)
+            self.__current_thread = thread_class(initial_node,self.__goal_set,self.__goal_notfound,**kwargs)
+            self.__current_thread.start()
+            self.__buttons.pause.config(state=NORMAL)
+            self.__buttons.terminate.config(state=NORMAL)
+            self.__control_bar.disable()    
 
 
-    def pack_on_screen(self):
+    def __pack_on_screen(self):
         
-        self.__goal_label.grid(row=0,column=0,sticky = "NSEW",padx=(0, 5))
-        self.__T.grid(row=1,column=0,sticky = "NSEW",padx=(0, 5))
-        self.__Name_label.grid(row=0,column=1,sticky = "NSEW",padx=(0, 5))
-        self.__Name_text.grid(row=1,column=1,sticky = "NSEW",padx=(0, 5))
-        self.__H_label.grid(row=0,column=2,sticky = "NSEW")
-        self.__H_text.grid(row=1,column=2,sticky = "NSEW")
-        self.__tree_canvas.grid(row=2,column=0,sticky = "NSEW")
-        self.__drawing_canvas.grid(row=2,column=1,columnspan=2,sticky = "NSEW")
-        self.__control_bar.grid(row=2,column=3,sticky = "NSEW")
-        self.__buttons.grid(row=3,column=0)
-        self.__delete_canvas_button.grid(row=3,column=1)
-        self.__button.grid(row=4,column=0,columnspan=3,sticky = "NSEW")
-        self.columnconfigure(0,weight=2)
-        self.columnconfigure(1,weight=1)
-        self.columnconfigure(2,weight=1)
+        
+        self.__goal_label.grid(row=0,column=1,sticky = "NSEW",padx=(0, 5))
+        self.__T.grid(row=1,column=1,sticky = "NSEW",padx=(0, 5))
+        self.__Name_label.grid(row=0,column=2,sticky = "NSEW",padx=(0, 5))
+        self.__Name_text.grid(row=1,column=2,sticky = "NSEW",padx=(0, 5))
+        self.__H_label.grid(row=0,column=3,sticky = "NSEW")
+        self.__H_text.grid(row=1,column=3,sticky = "NSEW")
+        self.__tree_canvas.grid(row=2,column=1,sticky = "NSEW")
+        self.__drawing_canvas.grid(row=2,column=2,columnspan=2,sticky = "NSEW")
+        self.__control_bar.grid(row=2,column=4,sticky = "NSEW")
+        self.__buttons.grid(row=3,column=1)
+        self.__delete_canvas_button.grid(row=3,column=2)
+        self.__radio_buttons.grid(row=0,column=0,rowspan=4,sticky="NSEW")
+        
+        self.columnconfigure(0,weight=1)
+        self.columnconfigure(1,weight=4)
+        self.columnconfigure(2,weight=2)
+        self.columnconfigure(3,weight=2)
         self.rowconfigure(2,weight=1)
-        
         
 
     def pause_callback(self):
@@ -95,19 +105,8 @@ class MainCanvas(Frame):
         self.__buttons.delete.config(state=NORMAL)
         self.__current_thread = None
         
-    
-    
-    def breadth_search_first(self):
-        if self.__drawing_canvas.initial_node and not self.__current_thread:
-            initial_node = TreeNode(self.__tree_canvas.canvas,0,None,0,self.__tree_canvas.canvas.winfo_width(),self.__drawing_canvas.initial_node)
-            self.__current_thread = DepthFirstSearch(initial_node,self.goal_set,self.goal_notfound)
-            self.__current_thread.start()
-            self.__buttons.pause.config(state=NORMAL)
-            self.__buttons.terminate.config(state=NORMAL)
-            self.__control_bar.disable()    
-
-    
-    def goal_set(self,string):
+        
+    def __goal_set(self,string):
         
         self.__T.config(state=NORMAL)
         self.__T.delete("1.0","end")
@@ -115,7 +114,7 @@ class MainCanvas(Frame):
         self.__T.config(state=DISABLED)
         self.thread_finish()
     
-    def goal_notfound(self):
+    def __goal_notfound(self):
         
         self.__T.config(state=NORMAL)
         self.__T.delete("1.0","end")
@@ -127,7 +126,7 @@ if __name__ == "__main__":
     
     root =  Tk()
     root.geometry("1000x720")
-
+    root.title('AI Graph Search')
     can = MainCanvas(root,920,720)
     
     can.grid(row=0,column=0,sticky = "NSEW")

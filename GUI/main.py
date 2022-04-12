@@ -40,15 +40,16 @@ class Content(Frame):
         self.rowconfigure(1, weight=1)
 
 
-root = Tk()
+if __name__ == "__main__":
+    root = Tk()
 
-content = Content(root)
-content.grid(column=0, row=0, sticky=(N, S, E, W))
+    content = Content(root)
+    content.grid(column=0, row=0, sticky=(N, S, E, W))
 
-root.columnconfigure(0, weight=1)
-root.rowconfigure(0, weight=1)
+    root.columnconfigure(0, weight=1)
+    root.rowconfigure(0, weight=1)
 
 
-root.mainloop() 
+    root.mainloop() 
 
 

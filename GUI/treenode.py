@@ -21,6 +21,9 @@ class TreeNodeDrawing(InteractionInterface):
         self.__label = label
         self.draw()
     
+    def get_level(self):
+        return self.__level
+
     def getchildren(self):
         return self.__children
 

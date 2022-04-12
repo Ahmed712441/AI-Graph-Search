@@ -3,10 +3,10 @@ import threading
 import time
 
 
-class Algorithm(threading.Thread):
+class BaseAlgorithm(threading.Thread):
 
     def __init__(self, inital_node,success_callback,failure_callback ,*args, **kwargs):
-        super(Algorithm, self).__init__(*args, **kwargs)
+        super(BaseAlgorithm, self).__init__(*args, **kwargs)
         self.__flag = threading.Event() # The flag used to pause the thread
         self.__flag.set() # Set to True
         self.__running = threading.Event() # Used to stop the thread identification
@@ -30,7 +30,6 @@ class Algorithm(threading.Thread):
         note : this function expand the node in self.current_node variable. So , loop using this file 
         '''
         self.current_node.expand_node()
-
         children = self.current_node.getchildren()
         for child in children:
             self.fringe.append(child) 
@@ -92,28 +91,3 @@ class Algorithm(threading.Thread):
         self.__running.clear() # Set to False
 
 
-class BreadthSearchFirst(Algorithm):
-    pass
-
-
-class DepthFirstSearch(Algorithm):
-
-    def pick_node(self):
-
-        '''
-        normal implementation to pick new node        
-        ''' 
-        
-        try: 
-            self.current_node = self.fringe.pop()
-            self.current_node.mark_active()
-            time.sleep(1)
-            while self.current_node.is_visited():
-                time.sleep(1)
-                self.get_wait_flag().wait()
-                self.current_node.mark_already_visited()
-                self.current_node = self.fringe.pop()
-                self.current_node.mark_active()
-        except Exception as e:
-            print(e)
-            self.current_node = None

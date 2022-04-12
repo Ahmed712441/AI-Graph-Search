@@ -4,7 +4,7 @@ import time
 
 class TreeNodeDrawing(InteractionInterface):
 
-    def __init__(self,treecanvas,level,parent,left,right,sub_class,Line=None):
+    def __init__(self,treecanvas,level,parent,left,right,sub_class,label,Line=None):
         super(TreeNodeDrawing,self).__init__(treecanvas)
         self.__canvas = treecanvas
         self.__level = level
@@ -18,7 +18,7 @@ class TreeNodeDrawing(InteractionInterface):
         self.__weight = 1
         self.__parent_canvas_line = Line
         self.__sub_class = sub_class
-        # self.has_cross = False
+        self.__label = label
         self.draw()
     
     def getchildren(self):
@@ -42,6 +42,7 @@ class TreeNodeDrawing(InteractionInterface):
 
     def draw(self):
         self.__id = self.__create_circle()
+        self.__label_id = self.__canvas.create_text((self.__x, self.__y), text=self.__label)
         super(TreeNodeDrawing,self).set_id(self.__id)
     
     def delete(self):
@@ -53,6 +54,7 @@ class TreeNodeDrawing(InteractionInterface):
         diff = new_x - self.__x 
         self.__x = new_x
         self.__canvas.move(self.__id,diff,0)
+        self.__canvas.move(self.__label_id,diff,0)
         if self.has_cross:
             self.move_cross()
     
@@ -151,7 +153,7 @@ class TreeNode(TreeNodeDrawing):
 
     
     def __init__(self,treecanvas,level,parent,left,right,node,Line=None,value=0) -> None:
-        super(TreeNode,self).__init__(treecanvas,level,parent,left,right,TreeNode,Line)
+        super(TreeNode,self).__init__(treecanvas,level,parent,left,right,TreeNode,node.label,Line)
         self.__node = node
         self.value = value   
         self.__line = Line
@@ -215,6 +217,7 @@ class TreeNode(TreeNodeDrawing):
     def is_visited(self):
         return self.__node.visited
     
+
     def path_to_root(self,mark=True):
         parent = self.get_parent()
         if mark:

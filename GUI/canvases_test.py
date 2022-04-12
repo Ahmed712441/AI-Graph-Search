@@ -74,6 +74,10 @@ class MainCanvas(Frame):
     def delete_all(self):
         self.__tree_canvas.canvas.delete("all")
         self.__buttons.delete.config(state=DISABLED)
+        self.__T.config(state=NORMAL)
+        self.__T.delete("1.0","end")
+        self.__T.insert(END, "Goal path will appear here")
+        self.__T.config(state=DISABLED)
         self.__drawing_canvas.reset()
 
     def thread_finish(self):
@@ -86,8 +90,7 @@ class MainCanvas(Frame):
     
     
     def breadth_search_first(self):
-        if self.__drawing_canvas.initial_node:
-            # if self.__current_thread :
+        if self.__drawing_canvas.initial_node and not self.__current_thread:
             initial_node = TreeNode(self.__tree_canvas.canvas,0,None,0,self.width//2,self.__drawing_canvas.initial_node)
             self.__current_thread = BreadthSearchFirst(initial_node,self.goal_set,self.goal_notfound)
             self.__current_thread.start()

@@ -54,20 +54,21 @@ class Line(Element):
         self.__tree_line = None
         self.__tree_canvas = None
         self.deselect()
-    
-    def set_active(self):
+        
 
-        self.__canvas.itemconfig(self.__id, fill=ACTIVE_LINE_COLOR)
+    def set_active(self):
+        
+        self.select()
         self.__tree_canvas.itemconfig(self.__tree_line, fill=ACTIVE_LINE_COLOR)
     
     def set_goal_path(self):
 
-        self.__canvas.itemconfig(self.__id, fill=GOAL_PATH_LINE_COLOR)
+        self.select()
         self.__tree_canvas.itemconfig(self.__tree_line, fill=GOAL_PATH_LINE_COLOR)
     
     def reset_line(self):
-
-        self.__canvas.itemconfig(self.__id, fill=LINE_COLOR_NORMAL)
+        
+        self.deselect()
         self.__tree_canvas.itemconfig(self.__tree_line, fill=LINE_COLOR_NORMAL)
     
 
@@ -84,10 +85,12 @@ class Line(Element):
     def select(self):
 
         self.__canvas.itemconfig(self.__id, fill=LINE_COLOR_SELECTED)
+        self.__canvas.itemconfig(self.__label_id,fill=GOAL_PATH_LINE_LABEL_COLOR)
 
     def deselect(self):
 
         self.__canvas.itemconfig(self.__id, fill=LINE_COLOR_NORMAL)
+        self.__canvas.itemconfig(self.__label_id,fill=LINE_LABEL_COLOR)
     
     def bind_event(self,callback,binded_event='<Button-1>'):
         
@@ -217,6 +220,9 @@ class Node(Element,InteractionInterface):
         self.visited = True
     
     def reset(self):
+        super().reset_cross()
         self.__reset_color()
         self.visited = False
+        
+        
         

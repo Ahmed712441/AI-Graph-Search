@@ -53,12 +53,16 @@ class InteractionInterface:
         self.__canvas.delete(self.__cross_line2)
 
     def mark_goal_path(self):
-        if self.has_cross:
-            self.__delete_cross()
+        self.reset_cross()
         self.__canvas.itemconfig(self.__id, fill=GOAL_PATH_COLOR)
     
+    def reset_cross(self):
+        if self.has_cross:
+            self.__delete_cross()
+            self.has_cross = False
+
     def mark_already_visited(self):
-        self.mark_fringe()
+        self.mark_visited()
         if not self.has_cross:
             self.__draw_cross()
         

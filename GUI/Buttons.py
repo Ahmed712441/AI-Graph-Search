@@ -1,28 +1,28 @@
 from tkinter import *
 from tkinter.ttk import *
 import os
-from settings import mouse,Mouse_state
+from utils import mouse,Mouse_state
 
 class Button_Bar(Frame) :
     
     def __init__(self,root,width=300,height=400):
         
         Frame.__init__(self, root,width=width,height=height)
-        # self.grid_propagate(0)
+        
         self.root = root
         
-        circle_button = Button_Bar.create_button(self,os.path.join(os.getcwd(),'GUI','images','circle_resized.png'),self.circle_event)
+        self.__circle_button = Button_Bar.create_button(self,os.path.join(os.getcwd(),'GUI','images','circle_resized.png'),self.circle_event)
         
-        line_button = Button_Bar.create_button(self,os.path.join(os.getcwd(),'GUI','images','line_resized.png'),self.line_event)
+        self.__line_button = Button_Bar.create_button(self,os.path.join(os.getcwd(),'GUI','images','line_resized.png'),self.line_event)
 
-        inital_node_button = Button_Bar.create_button(self,os.path.join(os.getcwd(),'GUI','images','start_resized.png'),self.inital_node_event)
+        self.__inital_node_button = Button_Bar.create_button(self,os.path.join(os.getcwd(),'GUI','images','start_resized.png'),self.inital_node_event)
 
-        goal_button =  Button_Bar.create_button(self,os.path.join(os.getcwd(),'GUI','images','goal_resized.png'),self.goal_event)
+        self.__goal_button =  Button_Bar.create_button(self,os.path.join(os.getcwd(),'GUI','images','goal_resized.png'),self.goal_event)
 
-        circle_button.grid(column=0,row=0,padx=10, pady=10)
-        line_button.grid(column=0,row=1,padx=10, pady=10)
-        inital_node_button.grid(column=0,row=2,padx=10, pady=10)
-        goal_button.grid(column=0,row=3,padx=10, pady=10)
+        self.__circle_button.grid(column=0,row=0,padx=10, pady=10)
+        self.__line_button.grid(column=0,row=1,padx=10, pady=10)
+        self.__inital_node_button.grid(column=0,row=2,padx=10, pady=10)
+        self.__goal_button.grid(column=0,row=3,padx=10, pady=10)
         # circle_button.grid(column=0,row=0,sticky=(N,W,E,S))
         # line_button.grid(column=0,row=1,sticky=(N,W,E,S))
         # inital_node_button.grid(column=0,row=2,sticky=(N,W,E,S))
@@ -72,6 +72,22 @@ class Button_Bar(Frame) :
         else:
             mouse.set_state(Mouse_state.goal_node)
             self.root.config(cursor="target")
+
+    def disable(self):
+        self.__circle_button.config(state=DISABLED)
+        self.__line_button.config(state=DISABLED)
+        self.__inital_node_button.config(state=DISABLED)
+        self.__goal_button.config(state=DISABLED)
+        mouse.set_state(Mouse_state.disabled)
+
+    def enable(self):
+        self.__circle_button.config(state=NORMAL)
+        self.__line_button.config(state=NORMAL)
+        self.__inital_node_button.config(state=NORMAL)
+        self.__goal_button.config(state=NORMAL)
+        mouse.set_state(Mouse_state.normal)
+        
+
 
 
 class InteractionButtons(Frame):

@@ -2,21 +2,23 @@ from tkinter import *
 from tkinter import messagebox
 from Node import Node 
 from Buttons import Button_Bar
-from settings import mouse,Mouse_state,CANVAS_BACKGROUND_COLOR
-
+from settings import CANVAS_BACKGROUND_COLOR
+from utils import mouse,Mouse_state
 
 
 class DrawingCanvas(Frame):
 
-    def __init__(self,root,width=400,height=400,canvas_width=1000,canvas_height=1000,event_root=None):
+    def __init__(self,root,width=400,height=400,canvas_width=2000,canvas_height=1300,event_root=None):
         '''
         constructor
         '''
-        Frame.__init__(self, root,width=width,height=height) 
+        # width=width,height=height
+        Frame.__init__(self, root) 
         self.count_nodes = 0 # this variable used to count nodes helpful in labeling nodes
         self.hor_scrollbar = Scrollbar(self, orient=HORIZONTAL)
         self.ver_scrollbar = Scrollbar(self, orient=VERTICAL)
-        self.canvas = Canvas(self,background=CANVAS_BACKGROUND_COLOR,height=height-20,width=width-20,scrollregion=(0, 0, canvas_width, canvas_height),yscrollcommand=self.ver_scrollbar.set,xscrollcommand=self.hor_scrollbar.set) # canvas object
+        # height=height-20,width=width-20,
+        self.canvas = Canvas(self,background=CANVAS_BACKGROUND_COLOR,scrollregion=(0, 0, canvas_width, canvas_height),yscrollcommand=self.ver_scrollbar.set,xscrollcommand=self.hor_scrollbar.set) # canvas object
         self.hor_scrollbar['command'] = self.canvas.xview
         self.ver_scrollbar['command'] = self.canvas.yview
         # self.control_bar = Button_Bar(self) # side bar which contains (circle,line) buttons and forms for editing nodes 
@@ -26,7 +28,9 @@ class DrawingCanvas(Frame):
         self.initial_node = None # carry initial node
         # self.grid_propagate(0) # used to assures that frame will take its height and width even its children are smaller
         # self.canvas.grid_propagate(0)
-        self.canvas.grid(row=0,column=0,sticky=(N,W,E,S))  # places the canvas in row : 0 , column :0 in the frame
+        self.canvas.grid(row=0,column=0,sticky=(N,W,E,S)) # places the canvas in row : 0 , column :0 in the frame
+        self.rowconfigure(0,weight=1)
+        self.columnconfigure(0,weight=1)
         self.hor_scrollbar.grid(column=0, row=1, sticky=(W,E))
         self.ver_scrollbar.grid(column=1, row=0, sticky=(N,S))
         # self.control_bar.grid(column=2,row=0,sticky=(N,W,E,S)) # places the control_bar in row : 0 , column :1 in the frame
@@ -231,8 +235,10 @@ if __name__=="__main__":
     b = Button_Bar(root)
     can = DrawingCanvas(root,920,720)
 
-    can.grid(row=0,column=0)
+    can.grid(row=0,column=0,sticky="NSEW")
     b.grid(row=0,column=1,sticky="NSEW")
+    root.rowconfigure(0,weight=1)
+    root.columnconfigure(0,weight=1)
 
     root.mainloop()
 

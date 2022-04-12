@@ -1,6 +1,7 @@
 from abc import abstractmethod
 from settings import *
 from Interfaces import Element,InteractionInterface
+from utils import OverlapException,DuplicateConnectionException
 
 class Line(Element):
 

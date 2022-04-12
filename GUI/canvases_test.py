@@ -8,8 +8,9 @@ from tkinter.ttk import *
 from treecanvas import TreeCanvas
 from canvas import DrawingCanvas
 from Buttons import *
-from Algorithms.base_class import BreadthSearchFirst
+from Algorithms.base_class import BreadthSearchFirst,DepthFirstSearch
 from treenode import TreeNode
+from utils import mouse , Mouse_state
 
 class MainCanvas(Frame):
 
@@ -53,6 +54,12 @@ class MainCanvas(Frame):
         self.__buttons.grid(row=3,column=0)
         self.__delete_canvas_button.grid(row=3,column=1)
         self.__button.grid(row=4,column=0,columnspan=3,sticky = "NSEW")
+        self.columnconfigure(0,weight=2)
+        self.columnconfigure(1,weight=1)
+        self.columnconfigure(2,weight=1)
+        self.rowconfigure(2,weight=1)
+        
+        
 
     def pause_callback(self):
         if self.__current_thread :
@@ -79,6 +86,7 @@ class MainCanvas(Frame):
         self.__T.insert(END, "Goal path will appear here")
         self.__T.config(state=DISABLED)
         self.__drawing_canvas.reset()
+        self.__control_bar.enable()
 
     def thread_finish(self):
         self.__buttons.pause.config(state=DISABLED)
@@ -86,16 +94,17 @@ class MainCanvas(Frame):
         self.__buttons.terminate.config(state=DISABLED)
         self.__buttons.delete.config(state=NORMAL)
         self.__current_thread = None
-
+        
     
     
     def breadth_search_first(self):
         if self.__drawing_canvas.initial_node and not self.__current_thread:
-            initial_node = TreeNode(self.__tree_canvas.canvas,0,None,0,self.width//2,self.__drawing_canvas.initial_node)
-            self.__current_thread = BreadthSearchFirst(initial_node,self.goal_set,self.goal_notfound)
+            initial_node = TreeNode(self.__tree_canvas.canvas,0,None,0,self.__tree_canvas.canvas.winfo_width(),self.__drawing_canvas.initial_node)
+            self.__current_thread = DepthFirstSearch(initial_node,self.goal_set,self.goal_notfound)
             self.__current_thread.start()
             self.__buttons.pause.config(state=NORMAL)
             self.__buttons.terminate.config(state=NORMAL)
+            self.__control_bar.disable()    
 
     
     def goal_set(self,string):
@@ -121,7 +130,9 @@ if __name__ == "__main__":
 
     can = MainCanvas(root,920,720)
     
-    can.grid(row=0,column=0)
+    can.grid(row=0,column=0,sticky = "NSEW")
     
+    root.columnconfigure(0,weight=1)
+    root.rowconfigure(0,weight=1)
 
     root.mainloop()

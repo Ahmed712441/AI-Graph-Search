@@ -17,7 +17,12 @@ class Algorithm(threading.Thread):
         self.__success_callback = success_callback
         self.current_node.mark_active()
         
+    def get_wait_flag(self):
+        return self.__flag
     
+    def get_running_flag(self):
+        return self.__running
+
     def expand_node(self):
 
         '''
@@ -89,3 +94,26 @@ class Algorithm(threading.Thread):
 
 class BreadthSearchFirst(Algorithm):
     pass
+
+
+class DepthFirstSearch(Algorithm):
+
+    def pick_node(self):
+
+        '''
+        normal implementation to pick new node        
+        ''' 
+        
+        try: 
+            self.current_node = self.fringe.pop()
+            self.current_node.mark_active()
+            time.sleep(1)
+            while self.current_node.is_visited():
+                time.sleep(1)
+                self.get_wait_flag().wait()
+                self.current_node.mark_already_visited()
+                self.current_node = self.fringe.pop()
+                self.current_node.mark_active()
+        except Exception as e:
+            print(e)
+            self.current_node = None

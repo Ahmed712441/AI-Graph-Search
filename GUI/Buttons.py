@@ -23,10 +23,6 @@ class Button_Bar(Frame) :
         self.__line_button.grid(column=0,row=1,padx=10, pady=10)
         self.__inital_node_button.grid(column=0,row=2,padx=10, pady=10)
         self.__goal_button.grid(column=0,row=3,padx=10, pady=10)
-        # circle_button.grid(column=0,row=0,sticky=(N,W,E,S))
-        # line_button.grid(column=0,row=1,sticky=(N,W,E,S))
-        # inital_node_button.grid(column=0,row=2,sticky=(N,W,E,S))
-        # goal_button.grid(column=0,row=3,sticky=(N,W,E,S))
 
     @staticmethod
     def create_button(parent,img_path,callback):
@@ -39,39 +35,37 @@ class Button_Bar(Frame) :
 
         if (mouse.get_state() == Mouse_state.circle):
             mouse.set_state(Mouse_state.normal)              
-            self.root.config(cursor="arrow")
         else:
             mouse.set_state(Mouse_state.circle)   
-            self.root.config(cursor="cross")
+            
                     
 
     def line_event(self):
         
         if (mouse.get_state() == Mouse_state.line):
             mouse.set_state(Mouse_state.normal)
-            self.root.config(cursor="arrow")
+            
         else:
             mouse.set_state(Mouse_state.line)
-            self.root.config(cursor="plus")
+            
            
 
     def inital_node_event(self):
 
         if (mouse.get_state() == Mouse_state.initial_node):
             mouse.set_state(Mouse_state.normal)
-            self.root.config(cursor="arrow")
+            
         else:
             mouse.set_state(Mouse_state.initial_node)
-            self.root.config(cursor="spider")
-
+            
     def goal_event(self):
 
         if (mouse.get_state() == Mouse_state.goal_node):
             mouse.set_state(Mouse_state.normal)
-            self.root.config(cursor="arrow")
+            
         else:
             mouse.set_state(Mouse_state.goal_node)
-            self.root.config(cursor="target")
+            
 
     def disable(self):
         self.__circle_button.config(state=DISABLED)

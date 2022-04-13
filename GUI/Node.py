@@ -203,7 +203,7 @@ class Node(Element,InteractionInterface):
     def create(self):
         self.__id = self.__create_circle()
         self.__label_id = self.__canvas.create_text((self.__x, self.__y), text=self.__label)
-        self.__heurastic_id = self.__canvas.create_text((self.__x-RADUIS, self.__y-RADUIS), text=self.__heurastic,fill="red")
+        self.__heurastic_id = self.__canvas.create_text((self.__x-RADUIS, self.__y-RADUIS), text=self.__heurastic,fill=VALUE_COLOR)
         super(Node,self).set_id(self.__id)
         return self.__id
 

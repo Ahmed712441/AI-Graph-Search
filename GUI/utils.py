@@ -33,10 +33,26 @@ class Mouse_state:
     def __init__(self):
         self.__state = Mouse_state.normal
         self.callback = None    
+        self.__root = None
+
+    def set_root(self,root):
+        self.__root = root
 
     def set_callback(self,callback):
         self.callback = callback
 
+    def __reset_cursor(self):
+        if (self.__state == Mouse_state.goal_node):
+            self.__root.config(cursor="target")
+        elif(self.__state == Mouse_state.initial_node):
+            self.__root.config(cursor="spider")
+        elif(self.__state == Mouse_state.line):
+            self.__root.config(cursor="plus")
+        elif(self.__state == Mouse_state.circle):   
+            self.__root.config(cursor="cross")
+        else:
+            self.__root.config(cursor="arrow")
+            
 
     def set_state(self,new_state):
         
@@ -45,6 +61,7 @@ class Mouse_state:
             self.__state = new_state
         else:
             self.__state = new_state
+        self.__reset_cursor()
 
     def get_state(self):
         

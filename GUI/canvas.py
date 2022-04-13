@@ -45,7 +45,9 @@ class DrawingCanvas(Frame):
         function called when any keyboard key is called to check for node deletion
         '''
         
-        if (event.keycode == 46 or event.keycode == 8) and self.selected and not self.root.get_focus(): # keycode == 46 (<Delete key>) keycode == 8 (<Backspace key>) checks for delete press and node selection at the same moment
+        focused = self.root.focus_get().__str__()
+        
+        if (event.keycode == 46 or event.keycode == 8) and self.selected and not (focused == ".!maincanvas.!entry2" or focused == ".!maincanvas.!entry3"): # keycode == 46 (<Delete key>) keycode == 8 (<Backspace key>) checks for delete press and node selection at the same moment
             
             if  isinstance(self.selected,Node):
                 for line in self.selected.lines_in + self.selected.lines_out:

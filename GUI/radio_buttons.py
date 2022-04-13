@@ -8,7 +8,7 @@ class AlgorithmsRadioButtons(Frame):
         
         Frame.__init__(self, root)
         self.__var = IntVar()
-        self.__depth_limited_text = Text(self,height = 1,width=6,padx=10,pady=10)
+        self.__depth_limited_text = Entry(self)
         self.__algorithms_label = Label(self,text = "Search Algorithms :")
         self.__uninformed_label = Label(self,text = "uninformed Search Algorithms :")
         self.__informed_label = Label(self,text = "informed Search Algorithms :")
@@ -47,7 +47,7 @@ class AlgorithmsRadioButtons(Frame):
         elif num == 2:
             self.__submit_callback(DepthFirstSearch)
         elif num == 3:
-            self.__submit_callback(DepthLimitedSearch,limit=int(self.__depth_limited_text.get("1.0", "end-1c")))
+            self.__submit_callback(DepthLimitedSearch,limit=int(self.__depth_limited_text.get()))
         elif num == 4:
             self.__submit_callback(IterativeDeepeningSearch,canvas=self.__canvas)
         elif num == 5:

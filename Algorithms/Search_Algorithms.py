@@ -120,13 +120,28 @@ class IterativeDeepeningSearch(DepthLimitedSearch):
 
 
 class UniformCostSearch(BaseAlgorithm):
-    pass
+    
+    def expand_node(self):
+        super(UniformCostSearch,self).expand_node()        
+        self.fringe.sort()
 
 
 class GreedyBestFirstSearch(BaseAlgorithm):
-    pass
+    
+    def expand_node(self):
+        super(GreedyBestFirstSearch,self).expand_node()
+        children = self.current_node.getchildren()
+        for child in children:        
+            child.set_value(child.get_node_heurastic())
+        self.fringe.sort()
 
 class AStarSearch(BaseAlgorithm):
-    pass
+    
+    def expand_node(self):
+        super(AStarSearch,self).expand_node()
+        children = self.current_node.getchildren()
+        for child in children:        
+            child.set_value(child.get_node_heurastic()+child.get_cost())
+        self.fringe.sort()
 
 

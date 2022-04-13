@@ -4,7 +4,7 @@ import time
 
 class TreeNodeDrawing(InteractionInterface):
 
-    def __init__(self,treecanvas,level,parent,left,right,sub_class,label,Line=None):
+    def __init__(self,treecanvas,level,parent,left,right,sub_class,label,Line=None,value=0,cost=0):
         super(TreeNodeDrawing,self).__init__(treecanvas)
         self.__canvas = treecanvas
         self.__level = level
@@ -19,8 +19,20 @@ class TreeNodeDrawing(InteractionInterface):
         self.__parent_canvas_line = Line
         self.__sub_class = sub_class
         self.__label = label
+        self.__value = value
+        self.__cost = cost
         self.draw()
     
+    def get_cost(self):
+        return self.__cost
+
+    def set_value(self,new_value):
+        self.__value = new_value
+        self.__canvas.itemconfig(self.__value_id, text=str(self.__value))
+
+    def get_value(self):
+        return self.__value 
+
     def reset_node(self):
         self.__children = []
         self.__weight = 1
@@ -54,6 +66,7 @@ class TreeNodeDrawing(InteractionInterface):
     def draw(self):
         self.__id = self.__create_circle()
         self.__label_id = self.__canvas.create_text((self.__x, self.__y), text=self.__label)
+        self.__value_id = self.__canvas.create_text((self.__x-TREE_NODE_RADUIS, self.__y-TREE_NODE_RADUIS), text=self.__value,fill=VALUE_COLOR)
         super(TreeNodeDrawing,self).set_id(self.__id)
     
     def delete(self):
@@ -66,6 +79,7 @@ class TreeNodeDrawing(InteractionInterface):
         self.__x = new_x
         self.__canvas.move(self.__id,diff,0)
         self.__canvas.move(self.__label_id,diff,0)
+        self.__canvas.move(self.__value_id,diff,0)
         if self.has_cross:
             self.move_cross()
     
@@ -92,8 +106,8 @@ class TreeNodeDrawing(InteractionInterface):
 
     def __create_add_node(self,left,right,node,line):
 
-        
-        node = self.__sub_class(self.__canvas,self.__level+1,self,left,right,node,line)
+        cost = self.__cost+line.get_weight()
+        node = self.__sub_class(self.__canvas,self.__level+1,self,left,right,node,line,value=cost,cost=cost)
         line = self.create_line(node.get_coor())
         node.set_parent_line(line)
         self.__children.append(node)
@@ -163,14 +177,14 @@ class TreeNodeDrawing(InteractionInterface):
 class TreeNode(TreeNodeDrawing):
 
     
-    def __init__(self,treecanvas,level,parent,left,right,node,Line=None,value=0) -> None:
-        super(TreeNode,self).__init__(treecanvas,level,parent,left,right,TreeNode,node.label,Line)
-        self.__node = node
-        self.value = value   
+    def __init__(self,treecanvas,level,parent,left,right,node,Line=None,value=0,cost=0) -> None:
+        self.__node = node   
         self.__line = Line
+        super(TreeNode,self).__init__(treecanvas,level,parent,left,right,TreeNode,node.get_label(),Line,value,cost)
+        
 
     def __lt__(self, other):
-        return self.value < other.value
+        return self.get_value() < other.get_value()
 
     def expand_node(self):
 
@@ -187,7 +201,7 @@ class TreeNode(TreeNodeDrawing):
         return self.__node.lines_out[index]
     
     def get_node_heurastic(self):
-        return self.__node.heurastic
+        return self.__node.get_heurastic()
 
     def is_goal(self):
         return self.__node.is_goal()
@@ -234,9 +248,9 @@ class TreeNode(TreeNodeDrawing):
         if mark:
             self.mark_goal_path()
         if parent:
-            return parent.path_to_root() + "-->" + self.__node.label  
+            return parent.path_to_root() + "-->" + self.__node.get_label()  
         else:
-            return self.__node.label
+            return self.__node.get_label()
 
     def mark_already_visited(self):
         self.__deactivate_line()

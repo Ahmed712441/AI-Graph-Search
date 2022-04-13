@@ -4,7 +4,7 @@ from Algorithms.Search_Algorithms import *
 
 class AlgorithmsRadioButtons(Frame):
 
-    def __init__(self,root,submit_callback):
+    def __init__(self,root,submit_callback,canvas=None):
         
         Frame.__init__(self, root)
         self.__var = IntVar()
@@ -21,6 +21,7 @@ class AlgorithmsRadioButtons(Frame):
         self.__greedy = Radiobutton(self, text='greedy best first search', variable=self.__var, value=7)
         self.__button = Button(self ,text="Start Search" , command=self.__start_search)
         self.__submit_callback =submit_callback
+        self.__canvas = canvas
         self.__pack_on_screen()
 
     def __pack_on_screen(self):
@@ -48,7 +49,7 @@ class AlgorithmsRadioButtons(Frame):
         elif num == 3:
             self.__submit_callback(DepthLimitedSearch,limit=int(self.__depth_limited_text.get("1.0", "end-1c")))
         elif num == 4:
-            self.__submit_callback(IterativeDeepeningSearch)
+            self.__submit_callback(IterativeDeepeningSearch,canvas=self.__canvas)
         elif num == 5:
             self.__submit_callback(UniformCostSearch)
         elif num == 6:

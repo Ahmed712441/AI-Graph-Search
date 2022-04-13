@@ -69,7 +69,8 @@ class BaseAlgorithm(threading.Thread):
              
             if(self.check_node()): # check if node is goal or not
                 self.current_node.mark_visited()
-                self.__success_callback(self.current_node.path_to_root(True))
+                if self.__success_callback:
+                    self.__success_callback(self.current_node.path_to_root(True))
                 return
             self.__flag.wait() # used for pause and resume
             self.expand_node() # expand node
@@ -78,7 +79,9 @@ class BaseAlgorithm(threading.Thread):
             self.__flag.wait() # used for pause and resume
             self.pick_node() # pick new node from the fringe
             time.sleep(2)
-        self.__failure_callback()
+        
+        if self.__failure_callback:
+            self.__failure_callback()
 
     def pause(self):
         self.__flag.clear() # Set to False to block the thread

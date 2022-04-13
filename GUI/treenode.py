@@ -21,6 +21,14 @@ class TreeNodeDrawing(InteractionInterface):
         self.__label = label
         self.draw()
     
+    def reset_node(self):
+        self.__children = []
+        self.__weight = 1
+        self.draw()
+    
+    def get_canvas(self):
+        return self.__canvas
+
     def get_level(self):
         return self.__level
 
@@ -234,3 +242,12 @@ class TreeNode(TreeNodeDrawing):
         self.__deactivate_line()
         super().mark_already_visited()
         self.__node.mark_already_visited()
+
+    def set_expanded_level(self,level):
+        self.__node.set_expanded_level(level)
+
+    def get_expanded_level(self):
+        return self.__node.get_expanded_level()
+
+    def has_children(self):
+        return len(self.__node.adj) > 0

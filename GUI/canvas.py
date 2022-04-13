@@ -8,46 +8,44 @@ from utils import mouse,Mouse_state
 
 class DrawingCanvas(Frame):
 
-    def __init__(self,root,width=400,height=400,canvas_width=2000,canvas_height=1300,event_root=None):
+    def __init__(self,root,width=400,height=400,canvas_width=2000,canvas_height=1300,event_root=None,onselect=None,onrelease=None):
         '''
         constructor
         '''
-        # width=width,height=height
+        self.root = root
         Frame.__init__(self, root) 
         self.count_nodes = 0 # this variable used to count nodes helpful in labeling nodes
         self.hor_scrollbar = Scrollbar(self, orient=HORIZONTAL)
         self.ver_scrollbar = Scrollbar(self, orient=VERTICAL)
-        # height=height-20,width=width-20,
+        
         self.canvas = Canvas(self,background=CANVAS_BACKGROUND_COLOR,scrollregion=(0, 0, canvas_width, canvas_height),yscrollcommand=self.ver_scrollbar.set,xscrollcommand=self.hor_scrollbar.set) # canvas object
         self.hor_scrollbar['command'] = self.canvas.xview
         self.ver_scrollbar['command'] = self.canvas.yview
-        # self.control_bar = Button_Bar(self) # side bar which contains (circle,line) buttons and forms for editing nodes 
+         
         self.connection_node = None # node which carry the id of previously selected node needed only in line case as line needs to connects two nodes so this is considered as the first node  
         self.objects = dict() # hash-map used for mapping objects_id (Lines and Nodes) on canvas to objects (Line or Node) 
         self.selected = None # carry the id of selected node to be edited , deleted
         self.initial_node = None # carry initial node
-        # self.grid_propagate(0) # used to assures that frame will take its height and width even its children are smaller
-        # self.canvas.grid_propagate(0)
+        
         self.canvas.grid(row=0,column=0,sticky=(N,W,E,S)) # places the canvas in row : 0 , column :0 in the frame
         self.rowconfigure(0,weight=1)
         self.columnconfigure(0,weight=1)
         self.hor_scrollbar.grid(column=0, row=1, sticky=(W,E))
         self.ver_scrollbar.grid(column=1, row=0, sticky=(N,S))
-        # self.control_bar.grid(column=2,row=0,sticky=(N,W,E,S)) # places the control_bar in row : 0 , column :1 in the frame
+        self.__on_select = onselect
+        self.__on_release = onrelease
         mouse.set_callback(self.undo_selection) # add callback function when mouse changes its state (event)
         self.canvas.bind("<ButtonPress-1>", self.mouse_clicked) # add callback function on click event for canvas
         event_root =  event_root if event_root else root
         event_root.bind("<KeyPress>", self.key_pressed) # add callback function on keyboard press event for the whole window
-        # self.rowconfigure(0,weight=1)
-        # self.columnconfigure(0,weight=1)
-
+        
     def key_pressed(self,event):
         
         '''
         function called when any keyboard key is called to check for node deletion
         '''
         
-        if (event.keycode == 46 or event.keycode == 8) and self.selected : # keycode == 46 (<Delete key>) keycode == 8 (<Backspace key>) checks for delete press and node selection at the same moment
+        if (event.keycode == 46 or event.keycode == 8) and self.selected and not self.root.get_focus(): # keycode == 46 (<Delete key>) keycode == 8 (<Backspace key>) checks for delete press and node selection at the same moment
             
             if  isinstance(self.selected,Node):
                 for line in self.selected.lines_in + self.selected.lines_out:
@@ -59,8 +57,8 @@ class DrawingCanvas(Frame):
             self.selected.delete() # get the node from the map and deletes it
             del self.objects[str(self.selected.get_id())] 
             self.selected = None
-            
-         
+            self.__on_release()
+
 
     def undo_selection(self):
 
@@ -76,9 +74,11 @@ class DrawingCanvas(Frame):
             
         
         if self.selected:
-            
+
+            self.__on_release()
             self.selected.deselect()
             self.selected = None
+
 
     def mouse_clicked(self,event):
 
@@ -147,18 +147,20 @@ class DrawingCanvas(Frame):
                 
                 self.selected = self.objects[str(canvas_item_id)] 
                 self.selected.select()
+                self.__on_select()
                  
             # 5th case
             elif self.selected.get_id() == canvas_item_id:
-
+                self.__on_release()
                 self.selected.deselect()
                 self.selected = None
             # 4th case
             else:
-               
+                self.__on_release()
                 self.selected.deselect()
                 self.selected = self.objects[str(canvas_item_id)]
                 self.selected.select()
+                self.__on_select()
 
         elif mouse.get_state() == Mouse_state.initial_node:
             selected_node = self.objects[str(canvas_item_id)]
@@ -199,16 +201,18 @@ class DrawingCanvas(Frame):
             if not self.selected : 
                 self.selected = self.objects[str(canvas_item_id)]
                 self.selected.select()
+                self.__on_select()
 
             elif self.selected.get_id() == canvas_item_id :
-                
+                self.__on_release()
                 self.reset_selected()
             
             else:
-
+                self.__on_release()
                 self.reset_selected()
                 self.selected = self.objects[str(canvas_item_id)]
                 self.selected.select()
+                self.__on_select()
                 
     def reset(self):
         for _,element in self.objects.items():

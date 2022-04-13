@@ -11,7 +11,17 @@ class Line(Element):
         self.__canvas = canvas
         self.Node_in = Node_in
         self.Node_out = Node_out
-        self.weight = weight
+        self.__weight = weight
+
+
+    def get_weight(self):
+        return self.__weight
+    
+    def set_weight(self,new_weight:int):
+      
+        if new_weight != self.__weight:
+            self.__weight = new_weight
+            self.__canvas.itemconfig(self.__label_id, text=str(new_weight))
 
 
     def __add_label(self):
@@ -19,7 +29,7 @@ class Line(Element):
         x1,y1,x2,y2 = self.__canvas.coords(self.__id)
         x = (x1 + x2)//2
         y = (y1 + y2)//2
-        self.__label_id = self.__canvas.create_text((x, y), text=self.weight)
+        self.__label_id = self.__canvas.create_text((x, y), text=self.__weight)
 
     def get_id(self):
         return self.__id
@@ -105,7 +115,7 @@ class Line(Element):
 
 class Node(Element,InteractionInterface):
 
-    def __init__(self,canvas,x,y,label,heurastic=0,goal=False):
+    def __init__(self,canvas,x,y,label,heurastic=0,goal=False,expanded_level=1000000):
         super(Node,self).__init__(canvas)
         self.adj = [] # carries adjancent nodes
         self.lines_out = [] # has all out lines 
@@ -114,10 +124,29 @@ class Node(Element,InteractionInterface):
         self.__canvas = canvas # canvas object helps in drawing on screen
         self.__x = x # x coordinate of its center
         self.__y = y # y coordinate of its center
-        self.label = label # unique label used to identify each node used mainly in GUI 
+        self.__label = label # unique label used to identify each node used mainly in GUI 
         self.__initial = False # boolean value to define if this node is initial or not
-        self.heurastic = heurastic
+        self.__heurastic = heurastic
         self.visited = False
+        self.__expanded_level = expanded_level
+
+    def set_heurastic(self,new_heurastic:int):
+        
+        if new_heurastic != self.__heurastic:
+            self.__heurastic = new_heurastic
+            self.__canvas.itemconfig(self.__heurastic_id, text=str(self.__heurastic))
+    
+    def get_heurastic(self):
+        return self.__heurastic
+
+    def get_label(self):
+        return self.__label
+
+    def set_label(self,new_label):
+        if new_label != self.__label:
+            self.__label = new_label
+            self.__canvas.itemconfig(self.__label_id, text=str(new_label))
+
 
     def set_initial(self):
 
@@ -173,7 +202,8 @@ class Node(Element,InteractionInterface):
 
     def create(self):
         self.__id = self.__create_circle()
-        self.__label_id = self.__canvas.create_text((self.__x, self.__y), text=self.label)
+        self.__label_id = self.__canvas.create_text((self.__x, self.__y), text=self.__label)
+        self.__heurastic_id = self.__canvas.create_text((self.__x-RADUIS, self.__y-RADUIS), text=self.__heurastic,fill="red")
         super(Node,self).set_id(self.__id)
         return self.__id
 
@@ -187,6 +217,7 @@ class Node(Element,InteractionInterface):
         
         self.__canvas.delete(self.__id)
         self.__canvas.delete(self.__label_id)
+        self.__canvas.delete(self.__heurastic_id)
 
     def select(self):
 
@@ -214,7 +245,7 @@ class Node(Element,InteractionInterface):
 
     def __str__(self):
     
-        return "Node("+ str(self.label)+")"
+        return "Node("+ str(self.__label)+")"
 
     def mark_visited(self):
         super().mark_visited()
@@ -224,6 +255,12 @@ class Node(Element,InteractionInterface):
         super().reset_cross()
         self.__reset_color()
         self.visited = False
+
+    def set_expanded_level(self,level):
+        self.__expanded_level = level if level < self.__expanded_level else self.__expanded_level
+
+    def get_expanded_level(self):
+        return self.__expanded_level
         
         
         

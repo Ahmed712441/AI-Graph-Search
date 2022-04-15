@@ -1,6 +1,6 @@
 from tkinter import *
 from tkinter import messagebox
-from Node import Node 
+from Node import Node ,Line
 from Buttons import Button_Bar
 from settings import CANVAS_BACKGROUND_COLOR
 from utils import mouse,Mouse_state
@@ -14,7 +14,7 @@ class DrawingCanvas(Frame):
         '''
         self.root = root
         Frame.__init__(self, root) 
-        self.count_nodes = 0 # this variable used to count nodes helpful in labeling nodes
+        self.__count_nodes = 0 # this variable used to count nodes helpful in labeling nodes
         self.hor_scrollbar = Scrollbar(self, orient=HORIZONTAL)
         self.ver_scrollbar = Scrollbar(self, orient=VERTICAL)
         
@@ -81,6 +81,7 @@ class DrawingCanvas(Frame):
             self.selected.deselect()
             self.selected = None
 
+    
 
     def mouse_clicked(self,event):
 
@@ -90,13 +91,13 @@ class DrawingCanvas(Frame):
 
         if mouse.get_state() == Mouse_state.circle: # check for mouse state
             
-            n = Node(self.canvas,self.canvas.canvasx(event.x),self.canvas.canvasy(event.y),str(self.count_nodes)) # initialize node
+            n = Node(self.canvas,self.canvas.canvasx(event.x),self.canvas.canvasy(event.y),str(self.__count_nodes)) # initialize node
             try:
                 id = n.create() # create node
                 self.objects[str(id)] = n # add node to nodes hash-table
                 n.bind_event(self.node_clicked) # add click event to node
                  
-                self.count_nodes+=1 # increment number of nodes
+                self.__count_nodes+=1 # increment number of nodes
             except Exception as e: 
                 messagebox.showerror(title=e.title,message=e)
                 del n
@@ -222,14 +223,67 @@ class DrawingCanvas(Frame):
 
     def delete_all(self):
 
-        self.count_nodes = 0 
+        self.__count_nodes = 0 
         self.connection_node = None 
         del self.objects
         self.objects = dict()  
         self.selected = None
         self.initial_node = None
         self.canvas.delete("all")
+    
+    def save(self,path):
+        with open(path, mode='w', encoding='utf-8') as file:
+            for _,element in self.objects.items():
+                if isinstance(element,Node):
+                    file.write(element.get_save_data())
+            file.write('!\n')        
+            for _,element in self.objects.items():
+                if isinstance(element,Line):
+                    file.write(element.get_save_data())
+
+    def __load_nodes(self,lines):
         
+        old_to_new_id_maping = dict()
+        i = 0
+        while i < len(lines):
+            lines[i] = lines[i].replace('\n','') 
+            if(lines[i] == '!'):
+                break
+            node = Node(self.canvas,None,None,None)
+            node.load(lines[i])
+            node.bind_event(self.node_clicked)
+            self.objects[str(node.get_id())] = node
+            old_id = lines[i].split('\t')[0]
+            old_to_new_id_maping[old_id] = node
+            if node.is_initial():
+                self.initial_node = node
+            i += 1
+        self.__count_nodes = i
+
+        return old_to_new_id_maping
+
+    def __load_connections(self,nodes_dict,lines):
+        
+        for str_line in lines:
+            str_line = str_line.replace('\n','')
+            splitted = str_line.split('\t')
+            line = nodes_dict[splitted[1]].connect_node(nodes_dict[splitted[2]],int(splitted[0]))
+            line.bind_event(self.line_clicked)
+            self.objects[str(line.get_id())] =  line
+
+    def load(self,path):
+        
+        self.delete_all()
+        
+        file = open(path, mode='r', encoding='utf-8') 
+        lines = file.readlines()
+        file.close()    
+        
+        nodes_dict = self.__load_nodes(lines)
+
+        self.__load_connections(nodes_dict,lines[self.__count_nodes+1:]) 
+        
+
 
 
 

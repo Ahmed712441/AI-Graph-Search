@@ -1,9 +1,10 @@
 import sys
+from settings import * 
 
-sys.path.append("D:\AI\Project")
+sys.path.append(BASE_DIR)
 
 from tkinter import *
-from settings import *
+from settings import * 
 from tkinter.ttk import *
 from treecanvas import TreeCanvas
 from canvas import DrawingCanvas
@@ -12,6 +13,7 @@ from treenode import TreeNode
 from radio_buttons import AlgorithmsRadioButtons
 from Node import Line,Node
 from utils import mouse
+from tkinter.filedialog import *
 
 class MainCanvas(Frame):
 
@@ -20,7 +22,6 @@ class MainCanvas(Frame):
         Frame.__init__(self, root,width=width,height=height) 
         mouse.set_root(self)
         self.__drawing_canvas = DrawingCanvas(self,width//2,height-120,event_root = root,onselect=self.__on_element_selection,onrelease=self.__on_element_release)
-        self.__delete_canvas_button = Button_Bar.create_button(self,os.path.join(os.getcwd(),'GUI','images','delete_icon.png'),self.__drawing_canvas.delete_all)
         self.__tree_canvas = TreeCanvas(self,width//2,height-120)
         self.__control_bar = Button_Bar(self)
         self.__buttons = InteractionButtons(self,self.pause_callback,self.resume_callback,self.terminate_callback,self.delete_all)
@@ -42,13 +43,24 @@ class MainCanvas(Frame):
         self.__submit_changes.config(state=DISABLED)
         self.__current_thread = None   
         self.__radio_buttons = AlgorithmsRadioButtons(self,self.__submit_callback,self.__drawing_canvas)
+        self.__drawing_canvas_buttons = DrawingCanvasButtons(self,self.__drawing_canvas.delete_all,self.__on_save,self.__on_upload)
         self.__pack_on_screen()
     
+    def __on_save(self):
+        file_path = asksaveasfilename(initialfile='Untitled.gtxt',
+                                        defaultextension=".gtxt",
+                                        filetypes=[
+                                            ("Graph Documents","*.gtxt")])
+        self.__drawing_canvas.save(file_path)
     
-
+    def __on_upload(self):
+        file_path = askopenfilename(defaultextension=".gtxt",
+                                      filetypes=[
+                                        ("Graph Documents","*.gtxt")])
+        self.__drawing_canvas.load(file_path)
 
     def __on_element_selection(self):
-        
+        self.focus()
         if isinstance(self.__drawing_canvas.selected , Line):
             self.__H_text.config(state=NORMAL)
             self.__submit_changes.config(state=NORMAL)
@@ -85,12 +97,14 @@ class MainCanvas(Frame):
     def __submit_callback(self,thread_class,**kwargs):
 
         if self.__drawing_canvas.initial_node and not self.__current_thread:
+            self.__tree_canvas.canvas.delete("all")
             initial_node = TreeNode(self.__tree_canvas.canvas,0,None,0,self.__tree_canvas.canvas.winfo_width(),self.__drawing_canvas.initial_node)
             self.__current_thread = thread_class(initial_node,self.__goal_set,self.__goal_notfound,**kwargs)
             self.__current_thread.start()
+            self.__buttons.delete.config(state=DISABLED)
             self.__buttons.pause.config(state=NORMAL)
             self.__buttons.terminate.config(state=NORMAL)
-            self.__control_bar.disable()    
+            self.__control_bar.disable()
 
 
     def __pack_on_screen(self):
@@ -107,7 +121,7 @@ class MainCanvas(Frame):
         self.__drawing_canvas.grid(row=2,column=2,columnspan=2,sticky = "NSEW")
         self.__control_bar.grid(row=2,column=4,sticky = "NSEW")
         self.__buttons.grid(row=3,column=1)
-        self.__delete_canvas_button.grid(row=3,column=2)
+        self.__drawing_canvas_buttons.grid(row=3,column=2,columnspan=2)
         self.__radio_buttons.grid(row=0,column=0,rowspan=4,sticky="NSEW")
         
         self.columnconfigure(0,weight=1)

@@ -27,6 +27,10 @@ class Element:
     @abstractmethod
     def reset(self):
         pass
+    
+    @abstractmethod
+    def get_save_data(self):
+        pass
 
 class InteractionInterface:
     

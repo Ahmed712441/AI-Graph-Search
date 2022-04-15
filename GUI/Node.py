@@ -13,6 +13,9 @@ class Line(Element):
         self.Node_out = Node_out
         self.__weight = weight
 
+    def get_save_data(self):
+
+        return  str(self.__weight) + '\t' + str(self.Node_out.get_id()) + '\t' + str(self.Node_in.get_id())  +  '\n'
 
     def get_weight(self):
         return self.__weight
@@ -115,7 +118,7 @@ class Line(Element):
 
 class Node(Element,InteractionInterface):
 
-    def __init__(self,canvas,x,y,label,heurastic=0,goal=False,expanded_level=1000000):
+    def __init__(self,canvas,x,y,label,heurastic=0,goal=False,initial=False,expanded_level=1000000):
         super(Node,self).__init__(canvas)
         self.adj = [] # carries adjancent nodes
         self.lines_out = [] # has all out lines 
@@ -125,10 +128,15 @@ class Node(Element,InteractionInterface):
         self.__x = x # x coordinate of its center
         self.__y = y # y coordinate of its center
         self.__label = label # unique label used to identify each node used mainly in GUI 
-        self.__initial = False # boolean value to define if this node is initial or not
+        self.__initial = initial # boolean value to define if this node is initial or not
         self.__heurastic = heurastic
         self.visited = False
         self.__expanded_level = expanded_level
+    
+    def get_save_data(self):
+        initial = '1' if self.__initial else '0'
+        goal = '1' if self.__goal else '0'
+        return str(self.__id) + '\t' + str(self.__label) + '\t' + str(self.__x) + '\t' + str(self.__y) + '\t' + str(self.__heurastic) + '\t' + initial + '\t' + goal +'\n'
 
     def set_heurastic(self,new_heurastic:int):
         
@@ -172,13 +180,13 @@ class Node(Element,InteractionInterface):
         
         return self.__goal
 
-    def connect_node(self,node):
+    def connect_node(self,node,weight=1):
 
         if node in self.adj :
             raise DuplicateConnectionException()
             
         self.adj.append(node)
-        l = Line(self.__canvas,self,node)
+        l = Line(self.__canvas,self,node,weight)
         l.create()       
         self.lines_out.append(l)
         node.lines_in.append(l)
@@ -262,5 +270,19 @@ class Node(Element,InteractionInterface):
     def get_expanded_level(self):
         return self.__expanded_level
         
+    def is_initial(self):
+        return self.__initial
+
+    def load(self,string:str):
+        # 1	0	455.0	60.0	0	1	0
+        # self.__id  self.__label  self.__x  self.__y self.__heurastic initial goal
         
-        
+        attr = string.split('\t')
+        self.__label = attr[1]
+        self.__x = float(attr[2])
+        self.__y = float(attr[3])
+        self.__heurastic = int(attr[4])
+        self.__initial = (attr[5] == '1') 
+        self.__goal = (attr[6] =='1')
+        self.create()
+        self.__reset_color()

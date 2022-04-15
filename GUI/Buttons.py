@@ -106,6 +106,24 @@ class InteractionButtons(Frame):
         self.delete.grid(row=0,column=3)
         
 
+class DrawingCanvasButtons(Frame):
+
+    def __init__(self,root,delete_callback,save_callback,upload_callback,width=300,height=400):
+        
+        Frame.__init__(self, root,width=width,height=height)
+        self.__delete = Button_Bar.create_button(self,os.path.join(os.getcwd(),'GUI','images','delete_icon.png'),delete_callback)
+        self.__save = Button_Bar.create_button(self,os.path.join(os.getcwd(),'GUI','images','save_icon.png'),save_callback)
+        self.__load = Button_Bar.create_button(self,os.path.join(os.getcwd(),'GUI','images','upload_icon.png'),upload_callback)
+        self.pack_on_screen()
+
+    def pack_on_screen(self):
+        self.__save.grid(row=0,column=0)
+        self.__load.grid(row=0,column=1)
+        self.__delete.grid(row=0,column=2)
+        
+
+
+
 
 if __name__ == "__main__":
 
@@ -117,9 +135,11 @@ if __name__ == "__main__":
 
     # control.grid(sticky = "NSEW")
 
-    control = InteractionButtons(root,None,None,None,None)
+    # control = InteractionButtons(root,None,None,None,None)
+    # control.grid(sticky = "NSEW")
+    # DrawingCanvasButtons(root)
+    control = DrawingCanvasButtons(root,None,None,None,None)
     control.grid(sticky = "NSEW")
-
     root.mainloop()
 
 

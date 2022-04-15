@@ -1,4 +1,6 @@
+from pathlib import Path
 
+BASE_DIR = Path(__file__).resolve().parent.parent.__str__()
 
 RADUIS = 30
 CIRCLE_COLOR_NORMAL = "#0f0"

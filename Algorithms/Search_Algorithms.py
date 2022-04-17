@@ -1,6 +1,7 @@
 from Algorithms.base_class import BaseAlgorithm
 import time
 import threading
+from GUI.settings import SLEEP_AMOUNT
 
 class BreadthFirstSearch(BaseAlgorithm):
     pass
@@ -24,13 +25,14 @@ class DepthFirstSearch(BaseAlgorithm):
         try: 
             self.current_node = self.fringe.pop()
             self.current_node.mark_active()
-            time.sleep(1)
+            time.sleep(SLEEP_AMOUNT)
             while self.current_node.is_visited():
-                time.sleep(1)
+                
                 self.get_wait_flag().wait()
                 self.current_node.mark_already_visited()
                 self.current_node = self.fringe.pop()
                 self.current_node.mark_active()
+                time.sleep(SLEEP_AMOUNT)
         except :
             
             self.current_node = None
@@ -62,13 +64,14 @@ class DepthLimitedSearch(DepthFirstSearch):
         try: 
             self.current_node = self.fringe.pop()
             self.current_node.mark_active()
-            time.sleep(1)
+            time.sleep(SLEEP_AMOUNT)
             while self.current_node.is_visited() and self.current_node.get_expanded_level() <= self.current_node.get_level():
-                time.sleep(1)
+                
                 self.get_wait_flag().wait()
                 self.current_node.mark_already_visited()
                 self.current_node = self.fringe.pop()
                 self.current_node.mark_active()
+                time.sleep(SLEEP_AMOUNT)
         except :
             self.current_node = None
 
@@ -96,7 +99,7 @@ class IterativeDeepeningSearch(DepthLimitedSearch):
     def reset(self):
         self.__treecanvas.delete("all")
         self.__canvas.reset()
-        time.sleep(1)
+        time.sleep(SLEEP_AMOUNT)
         self.__current_limit+=1
         self.set_limit(self.__current_limit)
         self.__inital_node.reset_node()

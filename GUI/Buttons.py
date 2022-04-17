@@ -120,7 +120,17 @@ class DrawingCanvasButtons(Frame):
         self.__save.grid(row=0,column=0)
         self.__load.grid(row=0,column=1)
         self.__delete.grid(row=0,column=2)
-        
+    
+    def disable(self):
+        self.__save.config(state=DISABLED)
+        self.__load.config(state=DISABLED)
+        self.__delete.config(state=DISABLED)
+
+    def enable(self):
+        self.__save.config(state=NORMAL)
+        self.__load.config(state=NORMAL)
+        self.__delete.config(state=NORMAL)
+    
 
 
 

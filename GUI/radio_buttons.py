@@ -22,6 +22,7 @@ class AlgorithmsRadioButtons(Frame):
         self.__button = Button(self ,text="Start Search" , command=self.__start_search)
         self.__submit_callback =submit_callback
         self.__canvas = canvas
+        self.__depth_limited_text.bind('<FocusIn>',lambda x : self.__canvas.undo_selection())
         self.__pack_on_screen()
 
     def __pack_on_screen(self):
@@ -57,6 +58,11 @@ class AlgorithmsRadioButtons(Frame):
         elif num == 7:
             self.__submit_callback(GreedyBestFirstSearch)
 
+    def disable(self):
+        self.__button.config(state=DISABLED)
+    
+    def enable(self):
+        self.__button.config(state=NORMAL)
 
 if __name__ ==  "__main__":
     

@@ -265,3 +265,12 @@ class TreeNode(TreeNodeDrawing):
 
     def has_children(self):
         return len(self.__node.adj) > 0
+
+    def delete(self):
+        
+        
+        children = self.getchildren()
+        for child in children:
+            child.delete()
+    
+        del self

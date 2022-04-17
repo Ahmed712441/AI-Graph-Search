@@ -44,6 +44,7 @@ class MainCanvas(Frame):
         self.__current_thread = None   
         self.__radio_buttons = AlgorithmsRadioButtons(self,self.__submit_callback,self.__drawing_canvas)
         self.__drawing_canvas_buttons = DrawingCanvasButtons(self,self.__drawing_canvas.delete_all,self.__on_save,self.__on_upload)
+        self.__initial_node = None
         self.__pack_on_screen()
     
     def __on_save(self):
@@ -97,15 +98,15 @@ class MainCanvas(Frame):
     def __submit_callback(self,thread_class,**kwargs):
 
         if self.__drawing_canvas.initial_node and not self.__current_thread:
-            self.__tree_canvas.canvas.delete("all")
-            initial_node = TreeNode(self.__tree_canvas.canvas,0,None,0,self.__tree_canvas.canvas.winfo_width(),self.__drawing_canvas.initial_node)
-            self.__current_thread = thread_class(initial_node,self.__goal_set,self.__goal_notfound,**kwargs)
+            self.__initial_node = TreeNode(self.__tree_canvas.canvas,0,None,0,self.__tree_canvas.canvas.winfo_width(),self.__drawing_canvas.initial_node)
+            self.__current_thread = thread_class(self.__initial_node,self.__goal_set,self.__goal_notfound,**kwargs)
             self.__current_thread.start()
             self.__buttons.delete.config(state=DISABLED)
             self.__buttons.pause.config(state=NORMAL)
             self.__buttons.terminate.config(state=NORMAL)
             self.__control_bar.disable()
-
+            self.__radio_buttons.disable()
+            self.__drawing_canvas_buttons.disable()
 
     def __pack_on_screen(self):
         
@@ -135,12 +136,14 @@ class MainCanvas(Frame):
         if self.__current_thread :
             self.__current_thread.pause()
             self.__buttons.pause.config(state=DISABLED)
+            self.__buttons.terminate.config(state=DISABLED)
             self.__buttons.resume.config(state=NORMAL)
     
     def resume_callback(self):
         if self.__current_thread :
             self.__current_thread.resume()
             self.__buttons.pause.config(state=NORMAL)
+            self.__buttons.terminate.config(state=NORMAL)
             self.__buttons.resume.config(state=DISABLED)
     
     def terminate_callback(self):
@@ -158,6 +161,10 @@ class MainCanvas(Frame):
         self.__T.config(state=DISABLED)
         self.__drawing_canvas.reset()
         self.__control_bar.enable()
+        self.__radio_buttons.enable()
+        self.__drawing_canvas_buttons.enable()
+        self.__initial_node.delete()
+        self.__initial_node = None
 
     def thread_finish(self):
         self.__buttons.pause.config(state=DISABLED)

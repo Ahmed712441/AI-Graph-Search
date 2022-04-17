@@ -1,7 +1,7 @@
 # from abc import abstractmethod
 import threading
 import time
-
+from GUI.settings import SLEEP_AMOUNT
 
 class BaseAlgorithm(threading.Thread):
 
@@ -52,13 +52,13 @@ class BaseAlgorithm(threading.Thread):
         try: 
             self.current_node = self.fringe.pop(0)
             self.current_node.mark_active()
-            time.sleep(1)
+            time.sleep(SLEEP_AMOUNT)
             while self.current_node.is_visited():
-                time.sleep(1)
                 self.__flag.wait()
                 self.current_node.mark_already_visited()
                 self.current_node = self.fringe.pop(0)
                 self.current_node.mark_active()
+                time.sleep(SLEEP_AMOUNT)
         except :
             self.current_node = None
             
@@ -75,10 +75,10 @@ class BaseAlgorithm(threading.Thread):
             self.__flag.wait() # used for pause and resume
             self.expand_node() # expand node
             self.current_node.mark_visited()
-            time.sleep(1)
+            time.sleep(SLEEP_AMOUNT)
             self.__flag.wait() # used for pause and resume
             self.pick_node() # pick new node from the fringe
-            time.sleep(2)
+            time.sleep(SLEEP_AMOUNT)
         
         if self.__failure_callback:
             self.__failure_callback()

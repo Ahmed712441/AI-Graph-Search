@@ -93,7 +93,7 @@ class Line(Element):
         self.Node_out.adj.remove(self.Node_in)
         self.__canvas.delete(self.__id)
         self.__canvas.delete(self.__label_id)
-
+        del self
 
 
     def select(self):
@@ -226,6 +226,7 @@ class Node(Element,InteractionInterface):
         self.__canvas.delete(self.__id)
         self.__canvas.delete(self.__label_id)
         self.__canvas.delete(self.__heurastic_id)
+        del self
 
     def select(self):
 

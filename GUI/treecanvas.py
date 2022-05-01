@@ -3,8 +3,8 @@ from settings import *
 
 class TreeCanvas(Frame):
 
-    def __init__(self,root,width=200,height=200,canvas_width=1000,canvas_height=3000):
-        # width=width,height=height
+    def __init__(self,root,canvas_width=1000,canvas_height=5000):
+        
         Frame.__init__(self, root) 
         self.count_nodes = 0 # this variable used to count nodes helpful in labeling nodes
         self.hor_scrollbar = Scrollbar(self, orient=HORIZONTAL)
@@ -12,7 +12,6 @@ class TreeCanvas(Frame):
         self.canvas = Canvas(self,background=CANVAS_BACKGROUND_COLOR,scrollregion=(0, 0, canvas_width, canvas_height),yscrollcommand=self.ver_scrollbar.set,xscrollcommand=self.hor_scrollbar.set) # canvas object
         self.hor_scrollbar['command'] = self.canvas.xview
         self.ver_scrollbar['command'] = self.canvas.yview
-        # self.grid_propagate(0) # used to assures that frame will take its height and width even its children are smaller
         self.pack_on_screen()
     
     def pack_on_screen(self):
@@ -34,8 +33,5 @@ if __name__=="__main__":
     root.rowconfigure(0,weight=1)
     root.columnconfigure(0,weight=1)
     
-    # root.bind('<Map>', lambda x :print(can.canvas.winfo_width()) )
-    # root.bind("<ResizeRequest>", lambda x :print(x.state,can.canvas.winfo_width()))
-    # root.bind('<Unmap>', )
 
     root.mainloop()

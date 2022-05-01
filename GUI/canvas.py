@@ -8,7 +8,7 @@ from utils import mouse,Mouse_state
 
 class DrawingCanvas(Frame):
 
-    def __init__(self,root,width=400,height=400,canvas_width=2000,canvas_height=1300,event_root=None,onselect=None,onrelease=None):
+    def __init__(self,root,canvas_width=2000,canvas_height=1300,event_root=None,onselect=None,onrelease=None):
         '''
         constructor
         '''

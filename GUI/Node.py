@@ -139,8 +139,7 @@ class Node(Element,InteractionInterface):
         return str(self.__id) + '\t' + str(self.__label) + '\t' + str(self.__x) + '\t' + str(self.__y) + '\t' + str(self.__heurastic) + '\t' + initial + '\t' + goal +'\n'
 
     def set_heurastic(self,new_heurastic:int):
-        
-        if new_heurastic != self.__heurastic:
+        if not self.__goal and  new_heurastic != self.__heurastic:
             self.__heurastic = new_heurastic
             self.__canvas.itemconfig(self.__heurastic_id, text=str(self.__heurastic))
     
@@ -168,6 +167,7 @@ class Node(Element,InteractionInterface):
 
     def set_goal(self):
 
+        self.set_heurastic(0)        
         self.__goal = True
         self.__reset_color()
 
@@ -275,15 +275,15 @@ class Node(Element,InteractionInterface):
         return self.__initial
 
     def load(self,string:str):
-        # 1	0	455.0	60.0	0	1	0
-        # self.__id  self.__label  self.__x  self.__y self.__heurastic initial goal
-        
+
         attr = string.split('\t')
         self.__label = attr[1]
         self.__x = float(attr[2])
         self.__y = float(attr[3])
         self.__heurastic = int(attr[4])
         self.__initial = (attr[5] == '1') 
-        self.__goal = (attr[6] =='1')
+        goal = (attr[6] =='1')
         self.create()
+        if goal:
+            self.set_goal()
         self.__reset_color()

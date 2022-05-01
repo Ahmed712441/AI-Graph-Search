@@ -71,7 +71,8 @@ class TreeNodeDrawing(InteractionInterface):
     
     def delete(self):
         self.__canvas.delete(self.__id)
-
+        self.__canvas.delete(self.__label_id)
+        self.__canvas.delete(self.__value_id)
 
     def move_to(self,new_x):
         

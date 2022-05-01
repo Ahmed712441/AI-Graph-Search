@@ -70,7 +70,7 @@ class BaseAlgorithm(threading.Thread):
             if(self.check_node()): # check if node is goal or not
                 self.current_node.mark_visited()
                 if self.__success_callback:
-                    self.__success_callback(self.current_node.path_to_root(True))
+                    self.__success_callback(self.current_node.path_to_root(True) + "   path cost : " + str(self.current_node.get_cost()))
                 return
             self.__flag.wait() # used for pause and resume
             self.expand_node() # expand node

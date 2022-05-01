@@ -14,6 +14,7 @@ from radio_buttons import AlgorithmsRadioButtons
 from Node import Line,Node
 from utils import mouse
 from tkinter.filedialog import *
+from tkinter import messagebox
 
 class MainCanvas(Frame):
 
@@ -45,6 +46,7 @@ class MainCanvas(Frame):
         self.__radio_buttons = AlgorithmsRadioButtons(self,self.__submit_callback,self.__drawing_canvas)
         self.__drawing_canvas_buttons = DrawingCanvasButtons(self,self.__drawing_canvas.delete_all,self.__on_save,self.__on_upload)
         self.__initial_node = None
+        root.bind('<Control-s>',lambda x: self.__on_save())
         self.__pack_on_screen()
     
     def __on_save(self):
@@ -52,13 +54,22 @@ class MainCanvas(Frame):
                                         defaultextension=".gtxt",
                                         filetypes=[
                                             ("Graph Documents","*.gtxt")])
-        self.__drawing_canvas.save(file_path)
-    
+        if file_path:
+            try:
+                self.__drawing_canvas.save(file_path)
+            except:
+                self.__drawing_canvas.delete_all()
+                
     def __on_upload(self):
         file_path = askopenfilename(defaultextension=".gtxt",
                                       filetypes=[
                                         ("Graph Documents","*.gtxt")])
-        self.__drawing_canvas.load(file_path)
+        if file_path:
+            try:
+                self.__drawing_canvas.load(file_path)
+            except :
+                messagebox.showerror(title="File open error",message="Unable to open corrupted file")
+                self.__drawing_canvas.delete_all()
 
     def __on_element_selection(self):
         self.focus()
@@ -90,11 +101,17 @@ class MainCanvas(Frame):
 
     def __change_node(self):
         if isinstance(self.__drawing_canvas.selected , Line):
-            self.__drawing_canvas.selected.set_weight(int(self.__H_text.get()))
+            try:
+                self.__drawing_canvas.selected.set_weight(int(self.__H_text.get()))
+            except :
+                messagebox.showerror(title="ValueError",message="weight must be integer")
         elif isinstance(self.__drawing_canvas.selected , Node):
-            self.__drawing_canvas.selected.set_heurastic(int(self.__H_text.get()))
-            self.__drawing_canvas.selected.set_label(self.__Name_text.get())
-    
+            try:
+                self.__drawing_canvas.selected.set_heurastic(int(self.__H_text.get()))
+                self.__drawing_canvas.selected.set_label(self.__Name_text.get())
+            except:
+                messagebox.showerror(title="ValueError",message="Heurastic must be integer")
+
     def __submit_callback(self,thread_class,**kwargs):
 
         if self.__drawing_canvas.initial_node and not self.__current_thread:

@@ -22,8 +22,8 @@ class MainCanvas(Frame):
         self.width = width
         Frame.__init__(self, root,width=width,height=height) 
         mouse.set_root(self)
-        self.__drawing_canvas = DrawingCanvas(self,width//2,height-120,event_root = root,onselect=self.__on_element_selection,onrelease=self.__on_element_release)
-        self.__tree_canvas = TreeCanvas(self,width//2,height-120)
+        self.__drawing_canvas = DrawingCanvas(self,event_root = root,onselect=self.__on_element_selection,onrelease=self.__on_element_release)
+        self.__tree_canvas = TreeCanvas(self)
         self.__control_bar = Button_Bar(self)
         self.__buttons = InteractionButtons(self,self.pause_callback,self.resume_callback,self.terminate_callback,self.delete_all)
         self.__goal_label = Label(self,text = "Goal path :")

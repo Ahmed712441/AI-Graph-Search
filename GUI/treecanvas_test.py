@@ -1,5 +1,5 @@
 from tkinter import *
-from settings import *
+from .settings import *
 
 '''
 testing file for tree drawing algorithm

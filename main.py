@@ -1,18 +1,18 @@
 import sys
-from settings import * 
+from GUI.settings import * 
 
 sys.path.append(BASE_DIR)
 
 from tkinter import *
-from settings import * 
+from GUI.settings import * 
 from tkinter.ttk import *
-from treecanvas import TreeCanvas
-from canvas import DrawingCanvas
-from Buttons import *
-from treenode import TreeNode
-from radio_buttons import AlgorithmsRadioButtons
-from Node import Line,Node
-from utils import mouse
+from GUI.treecanvas import TreeCanvas
+from GUI.canvas import DrawingCanvas
+from GUI.Buttons import *
+from GUI.treenode import TreeNode
+from GUI.radio_buttons import AlgorithmsRadioButtons
+from GUI.Node import Line,Node
+from GUI.utils import mouse
 from tkinter.filedialog import *
 from tkinter import messagebox
 
@@ -70,6 +70,9 @@ class MainCanvas(Frame):
             except :
                 messagebox.showerror(title="File open error",message="Unable to open corrupted file")
                 self.__drawing_canvas.delete_all()
+
+    def get_drawing_canvas(self):
+        return self.__drawing_canvas
 
     def __on_element_selection(self):
         self.focus()
@@ -207,12 +210,17 @@ class MainCanvas(Frame):
         self.__T.config(state=DISABLED)
         self.thread_finish()
 
-    
+ 
 
 if __name__ == "__main__":
     
+    
     root =  Tk()
-    root.geometry("1000x720")
+    w, h = root.winfo_screenwidth(), root.winfo_screenheight()
+    w = 1200 if w > 1200 else w
+    h = 720 if h > 720 else h
+    root.geometry("%dx%d+0+0" % (w, h))
+    
     root.title('AI Graph Search')
     root.iconbitmap(os.path.join(BASE_DIR,'GUI','images','logo.ico'))
     can = MainCanvas(root,920,720)
@@ -221,5 +229,8 @@ if __name__ == "__main__":
     
     root.columnconfigure(0,weight=1)
     root.rowconfigure(0,weight=1)
+    for arg in sys.argv:
+        if arg[-5:] == '.gtxt':
+          can.get_drawing_canvas().load(arg)  
 
     root.mainloop()

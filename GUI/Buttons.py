@@ -1,8 +1,8 @@
 from tkinter import *
 from tkinter.ttk import *
 import os
-from utils import mouse,Mouse_state
-from settings import BASE_DIR
+from .utils import mouse,Mouse_state
+from .settings import BASE_DIR
 
 class Button_Bar(Frame) :
     

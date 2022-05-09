@@ -1,5 +1,5 @@
-from settings import *
-from Node import InteractionInterface
+from .settings import *
+from .Node import InteractionInterface
 import time
 
 class TreeNodeDrawing(InteractionInterface):

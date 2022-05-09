@@ -1,4 +1,4 @@
-from Algorithms.base_class import BaseAlgorithm
+from .base_class import BaseAlgorithm
 import time
 import threading
 from GUI.settings import SLEEP_AMOUNT

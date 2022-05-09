@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from settings import *
+from .settings import *
 
 class Element:
 

@@ -1,5 +1,5 @@
 from tkinter import *
-from settings import *
+from .settings import *
 
 class TreeCanvas(Frame):
 

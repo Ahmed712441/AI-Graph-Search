@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter.ttk import *
 from Algorithms.Search_Algorithms import *
+from tkinter import messagebox
 
 class AlgorithmsRadioButtons(Frame):
 
@@ -48,7 +49,10 @@ class AlgorithmsRadioButtons(Frame):
         elif num == 2:
             self.__submit_callback(DepthFirstSearch)
         elif num == 3:
-            self.__submit_callback(DepthLimitedSearch,limit=int(self.__depth_limited_text.get()))
+            try:
+                self.__submit_callback(DepthLimitedSearch,limit=int(self.__depth_limited_text.get()))
+            except:
+                messagebox.showerror(title="Type Error",message="You need to place number in text field")
         elif num == 4:
             self.__submit_callback(IterativeDeepeningSearch,canvas=self.__canvas)
         elif num == 5:
@@ -57,6 +61,8 @@ class AlgorithmsRadioButtons(Frame):
             self.__submit_callback(AStarSearch)
         elif num == 7:
             self.__submit_callback(GreedyBestFirstSearch)
+        else:
+            messagebox.showerror(title="Submit Error",message="You need to choose Algorithm")
 
     def disable(self):
         self.__button.config(state=DISABLED)

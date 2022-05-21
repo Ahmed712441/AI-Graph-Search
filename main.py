@@ -47,6 +47,7 @@ class MainCanvas(Frame):
         self.__drawing_canvas_buttons = DrawingCanvasButtons(self,self.__drawing_canvas.delete_all,self.__on_save,self.__on_upload)
         self.__initial_node = None
         root.bind('<Control-s>',lambda x: self.__on_save())
+        root.bind('<Control-o>',lambda x: self.__on_upload())
         self.__pack_on_screen()
     
     def __on_save(self):
@@ -127,6 +128,8 @@ class MainCanvas(Frame):
             self.__control_bar.disable()
             self.__radio_buttons.disable()
             self.__drawing_canvas_buttons.disable()
+        elif not self.__drawing_canvas.initial_node:
+            messagebox.showerror(title="InitialNode Error",message="Any Graph must contain initial node")
 
     def __pack_on_screen(self):
         

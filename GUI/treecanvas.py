@@ -1,6 +1,7 @@
 from tkinter import *
 from .settings import *
 
+
 class TreeCanvas(Frame):
 
     def __init__(self,root,canvas_width=1000,canvas_height=10000):

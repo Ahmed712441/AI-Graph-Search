@@ -1,5 +1,5 @@
 from tkinter import *
-from .settings import *
+from settings import *
 
 '''
 testing file for tree drawing algorithm
@@ -142,7 +142,7 @@ class TreeNodeTest:
         return self.__canvas.create_oval(x0, y0, x1, y1,fill=CIRCLE_COLOR_NORMAL)
 
     def bind_event(self):
-        self.__canvas.tag_bind(self.__id,'<Button-1>',lambda x : self.add_children())
+        self.__canvas.tag_bind(self.__id,'<Button-1>',lambda x : self.add_children(3))
 
 
 class TreeCanvasTest(Frame):
